@@ -1,0 +1,47 @@
+<idea-plugin version="2">
+    <id>cn.nekocode.plugin.parcelablegenerator</id>
+    <name>Android Parcelable Code Generator(kotlin)</name>
+    <version>0.1</version>
+    <vendor email="syfyw@qq.com" url="https://github.com/nekocode/android-parcelable-intellij-plugin-kotlin">nekocode</vendor>
+
+    <description><![CDATA[
+      Plugin which generates Android Parcelable <strong>kotlin</strong> boilerplate code for you.</br>
+Inspired by <a href="https://github.com/mcharmas/android-parcelable-intellij-plugin">android-parcelable-intellij-plugin</a>.</br>
+    ]]></description>
+
+    <change-notes><![CDATA[
+    ]]>
+    </change-notes>
+
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="131"/>
+
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <application-components>
+        <!-- Add your application components here -->
+    </application-components>
+
+    <project-components>
+        <!-- Add your project components here -->
+    </project-components>
+
+    <depends>org.jetbrains.kotlin</depends>
+
+    <actions>
+        <action id="generateParcelableKotlin" class="cn.nekocode.plugin.parcelablegenerator.ParcelableAction"
+                text="Parcelable(kotlin)"
+                description="Generates Android Parcelable based on kotlin data class fields">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+        </action>
+    </actions>
+
+</idea-plugin>
