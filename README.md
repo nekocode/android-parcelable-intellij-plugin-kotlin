@@ -1,4 +1,4 @@
-# IntelliJ/Android Studio Plugin for Android Parcelable kotlin boilerplate code generation
+# Android Parcelable kotlin boilerplate code generation( for kotlin's data class)
 **Inspired by [android-parcelable-intellij-plugin](https://github.com/mcharmas/android-parcelable-intellij-plugin)**
 
 ## Installation
@@ -9,6 +9,7 @@
  0. Choose the downloaded jar file
 
 ## Usage
-Just press ALT + Insert (or your equivalent keybinding for code generation) in your editor and select Parcelable. It allows you to select the fields to be parceled.
+Just press ALT + Insert (or your equivalent keybinding for code generation) in your editor and select Parcelable. It will auto generate Parcelable boilerplate code for your data class.  
+
 ![](art/uasge.gif)
 
