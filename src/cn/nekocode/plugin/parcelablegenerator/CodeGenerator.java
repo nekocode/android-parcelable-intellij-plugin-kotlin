@@ -55,7 +55,11 @@ public class CodeGenerator {
         for (ValueParameterDescriptor field : fields) {
             String type = field.getType().toString();
 
-            content += "source.read" + type + "(),";
+            if (type.equals("Boolean")) {
+                content += "1.toByte().equals(source.readByte()),";
+            } else {
+                content += "source.read" + type + "(),";
+            }
         }
 
         content = content.substring(0, content.length() - 1);
@@ -75,7 +79,11 @@ public class CodeGenerator {
             String type = field.getType().toString();
             String name = field.getName().toString();
 
-            sb.append("dest?.write").append(type).append("(this.").append(name).append(") \n");
+            if (type.equals("Boolean")) {
+                sb.append("dest?.writeByte((if(").append(name).append(") 1 else 0).toByte()) \n");
+            } else {
+                sb.append("dest?.write").append(type).append("(this.").append(name).append(") \n");
+            }
         }
 
         sb.append("}");
