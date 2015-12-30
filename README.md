@@ -3,7 +3,7 @@
 
 ## Installation
 
- 0. Download `ParcelableGenerator` [release](https://github.com/nekocode/android-parcelable-intellij-plugin-kotlin/releases/tag/v0.1)
+ 0. Download `ParcelableGenerator` [release](https://github.com/nekocode/android-parcelable-intellij-plugin-kotlin/releases)
  0. Open IntelliJ/Android Studio
  0. *Preferences* -> *Plugins* -> *Install plugin from disk...*.
  0. Choose the downloaded jar file
