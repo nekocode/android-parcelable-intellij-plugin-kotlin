@@ -2,6 +2,7 @@
 **Inspired by [android-parcelable-intellij-plugin](https://github.com/mcharmas/android-parcelable-intellij-plugin)**
 
 ## Installation
+Plugin is uploaded to plugin repository. If you like, you can also install it manually:
 
  0. Download `ParcelableGenerator` [release](https://github.com/nekocode/android-parcelable-intellij-plugin-kotlin/releases)
  0. Open IntelliJ/Android Studio
