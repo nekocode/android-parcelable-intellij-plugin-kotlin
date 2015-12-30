@@ -37,15 +37,12 @@ public class CodeGenerator {
     private String generateStaticCreator(KtClass ktClass) {
         String className = ktClass.getName();
 
-        StringBuilder sb = new StringBuilder("companion object { @JvmField final val CREATOR: Parcelable.Creator<");
-
-        sb.append(className).append("> = object : Parcelable.Creator<").append(className).append("> {")
-                .append("override fun createFromParcel(source: Parcel): ").append(className).append("{return ")
-                .append(className).append("(source)}")
-                .append("override fun newArray(size: Int): Array<").append(className).append("?> {")
-                .append("return arrayOfNulls(size)}")
-                .append("}}");
-        return sb.toString();
+        return "companion object { @JvmField final val CREATOR: Parcelable.Creator<" +
+                className + "> = object : Parcelable.Creator<" + className + "> {" +
+                "override fun createFromParcel(source: Parcel): " + className +
+                "{return " + className + "(source)}" +
+                "override fun newArray(size: Int): Array<" + className + "?> {" +
+                "return arrayOfNulls(size)}" + "}}";
     }
 
     private String generateConstructor(List<ValueParameterDescriptor> fields) {
@@ -95,8 +92,13 @@ public class CodeGenerator {
     public void generate() {
         KtPsiFactory elementFactory = new KtPsiFactory(mClass.getProject());
 
-        mClass.addBefore(elementFactory.createImportDirective(new ImportPath("android.os.Parcelable")), mClass.getFirstChild());
-        mClass.addBefore(elementFactory.createImportDirective(new ImportPath("android.os.Parcel")), mClass.getFirstChild());
+        KtFile parent = mClass.getContainingKtFile();
+//        while(!(parent.getParent() instanceof  KtFile)) {
+//            parent = (KtElement)parent.getParent();
+//        }
+
+        parent.addAfter(elementFactory.createImportDirective(new ImportPath("android.os.Parcelable")), parent.getFirstChild());
+        parent.addAfter(elementFactory.createImportDirective(new ImportPath("android.os.Parcel")), parent.getFirstChild());
 
         mClass.addAfter(elementFactory.createColon(), mClass.getLastChild());
         mClass.addAfter(elementFactory.createIdentifier("Parcelable"), mClass.getLastChild());
