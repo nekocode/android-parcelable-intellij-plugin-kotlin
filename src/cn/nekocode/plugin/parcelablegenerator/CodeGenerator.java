@@ -93,12 +93,26 @@ public class CodeGenerator {
         KtPsiFactory elementFactory = new KtPsiFactory(mClass.getProject());
 
         KtFile parent = mClass.getContainingKtFile();
-//        while(!(parent.getParent() instanceof  KtFile)) {
-//            parent = (KtElement)parent.getParent();
-//        }
 
-        parent.addAfter(elementFactory.createImportDirective(new ImportPath("android.os.Parcelable")), parent.getFirstChild());
-        parent.addAfter(elementFactory.createImportDirective(new ImportPath("android.os.Parcel")), parent.getFirstChild());
+        boolean importedParcelable = false;
+        boolean importedParcel = false;
+        List<KtImportDirective> importList = parent.getImportDirectives();
+        for(KtImportDirective importDirective : importList) {
+            String pathStr = importDirective.getImportPath().getPathStr();
+            if(pathStr.equals("android.os.Parcelable")) {
+                importedParcelable = true;
+            }
+            if(pathStr.equals("android.os.Parcel")) {
+                importedParcel = true;
+            }
+        }
+
+        if(!importedParcelable) {
+            parent.addAfter(elementFactory.createImportDirective(new ImportPath("android.os.Parcelable")), parent.getFirstChild());
+        }
+        if(!importedParcel) {
+            parent.addAfter(elementFactory.createImportDirective(new ImportPath("android.os.Parcel")), parent.getFirstChild());
+        }
 
         mClass.addAfter(elementFactory.createColon(), mClass.getLastChild());
         mClass.addAfter(elementFactory.createIdentifier("Parcelable"), mClass.getLastChild());
@@ -113,5 +127,4 @@ public class CodeGenerator {
         mClass.addAfter(elementFactory.createBlock(block), mClass.getLastChild());
 
     }
-
 }
