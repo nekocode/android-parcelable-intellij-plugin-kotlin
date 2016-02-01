@@ -14,3 +14,7 @@ Just press ALT + Insert (or your equivalent keybinding for code generation) in y
 
 ![](art/uasge.gif)
 
+## Now Suported Types
+- Types implementing `Parceable` or `Serializable`
+- Primitive Kotlin types: `Integer`, `Long`, `Float`, `Double`, `Boolean`, `Byte`
+
