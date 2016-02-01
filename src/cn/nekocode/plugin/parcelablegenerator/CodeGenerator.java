@@ -15,6 +15,7 @@
  */
 package cn.nekocode.plugin.parcelablegenerator;
 
+import com.intellij.psi.PsiElement;
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
 import org.jetbrains.kotlin.psi.*;
 import org.jetbrains.kotlin.resolve.ImportPath;
@@ -73,6 +74,7 @@ public class CodeGenerator {
                 }
             }
 
+            // Other supported type
             if(!isParcelableOrSerializable) {
                 if (typeName.equals("Boolean")) {
                     content += "1.toByte().equals(source.readByte()),";
@@ -123,6 +125,7 @@ public class CodeGenerator {
                 }
             }
 
+            // Other supported type
             if(!isParcelableOrSerializable) {
                 if (typeName.equals("Boolean")) {
                     sb.append("dest?.writeByte((if(")
@@ -150,16 +153,20 @@ public class CodeGenerator {
 
         KtFile parent = mClass.getContainingKtFile();
 
+        // Check if already imported Parcel and Parcelable
         boolean importedParcelable = false;
         boolean importedParcel = false;
         List<KtImportDirective> importList = parent.getImportDirectives();
         for(KtImportDirective importDirective : importList) {
-            String pathStr = importDirective.getImportPath().getPathStr();
-            if(pathStr.equals("android.os.Parcelable")) {
-                importedParcelable = true;
-            }
-            if(pathStr.equals("android.os.Parcel")) {
-                importedParcel = true;
+            ImportPath importPath = importDirective.getImportPath();
+            if(importPath != null) {
+                String pathStr = importPath.getPathStr();
+                if(pathStr.equals("android.os.Parcelable")) {
+                    importedParcelable = true;
+                }
+                if(pathStr.equals("android.os.Parcel")) {
+                    importedParcel = true;
+                }
             }
         }
 
@@ -170,10 +177,37 @@ public class CodeGenerator {
             parent.addAfter(elementFactory.createImportDirective(new ImportPath("android.os.Parcel")), parent.getFirstChild());
         }
 
-        mClass.addAfter(elementFactory.createColon(), mClass.getLastChild());
-        mClass.addAfter(elementFactory.createIdentifier("Parcelable"), mClass.getLastChild());
-        mClass.addAfter(elementFactory.createWhiteSpace(), mClass.getLastChild());
 
+        // Clean Class Body
+        KtClassBody body = mClass.getBody();
+        if(body != null) {
+            body.delete();
+        }
+
+        // Add colon
+        PsiElement colon = mClass.getColon();
+        if(colon == null) {
+            mClass.addAfter(elementFactory.createColon(), mClass.getLastChild());
+        }
+
+        // Check if already implement Parceable
+        Boolean implementedParceable = false;
+        List<KtDelegationSpecifier> delegationSpecifiers = mClass.getDelegationSpecifiers();
+        for(KtDelegationSpecifier delegationSpecifier : delegationSpecifiers) {
+            if(delegationSpecifier.getText().equals("Parcelable")) {
+                implementedParceable = true;
+            }
+        }
+
+        if(!implementedParceable) {
+            // Implement Parceable
+            if(delegationSpecifiers.size() > 0) {
+                mClass.addAfter(elementFactory.createComma(), mClass.getLastChild());
+            }
+
+            mClass.addAfter(elementFactory.createIdentifier("Parcelable"), mClass.getLastChild());
+            mClass.addAfter(elementFactory.createWhiteSpace(), mClass.getLastChild());
+        }
 
         String block = generateConstructor(mFields) + "\n\n" +
                 generateDescribeContents() + "\n\n" +
