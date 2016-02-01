@@ -18,7 +18,9 @@ package cn.nekocode.plugin.parcelablegenerator;
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
 import org.jetbrains.kotlin.psi.*;
 import org.jetbrains.kotlin.resolve.ImportPath;
+import org.jetbrains.kotlin.types.KotlinType;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -50,12 +52,34 @@ public class CodeGenerator {
 
         String content = "";
         for (ValueParameterDescriptor field : fields) {
-            String type = field.getType().toString();
+            KotlinType type = field.getType();
+            String typeName = type.toString();
 
-            if (type.equals("Boolean")) {
-                content += "1.toByte().equals(source.readByte()),";
-            } else {
-                content += "source.read" + type + "(),";
+            // Check if supertype is Parcelable or Serializable
+            Boolean isParcelableOrSerializable = false;
+            Collection<KotlinType> supertypes = type.getConstructor().getSupertypes();
+
+            for(KotlinType supertype : supertypes) {
+                String supertypeName = supertype.toString();
+                if(supertypeName.equals("Parcelable")) {
+                    content += "source.readParcelable<" + typeName + ">(" + typeName + "::class.java.classLoader),";
+                    isParcelableOrSerializable = true;
+                    break;
+
+                } else if(supertypeName.equals("Serializable")) {
+                    content += "source.readSerializable() as " + typeName + ",";
+                    isParcelableOrSerializable = true;
+                    break;
+                }
+            }
+
+            if(!isParcelableOrSerializable) {
+                if (typeName.equals("Boolean")) {
+                    content += "1.toByte().equals(source.readByte()),";
+
+                } else {
+                    content += "source.read" + typeName + "(),";
+                }
             }
         }
 
@@ -73,13 +97,45 @@ public class CodeGenerator {
         StringBuilder sb = new StringBuilder("override fun writeToParcel(dest: Parcel?, flags: Int) {");
 
         for (ValueParameterDescriptor field : fields) {
-            String type = field.getType().toString();
-            String name = field.getName().toString();
+            KotlinType type = field.getType();
+            String typeName = type.toString();
+            String fieldName = field.getName().toString();
 
-            if (type.equals("Boolean")) {
-                sb.append("dest?.writeByte((if(").append(name).append(") 1 else 0).toByte()) \n");
-            } else {
-                sb.append("dest?.write").append(type).append("(this.").append(name).append(") \n");
+            // Check if supertype is Parcelable or Serializable
+            Boolean isParcelableOrSerializable = false;
+            Collection<KotlinType> supertypes = type.getConstructor().getSupertypes();
+
+            for(KotlinType supertype : supertypes) {
+                String supertypeName = supertype.toString();
+                if(supertypeName.equals("Parcelable")) {
+                    sb.append("dest?.writeParcelable(this.")
+                            .append(fieldName)
+                            .append(", 0)\n");
+                    isParcelableOrSerializable = true;
+                    break;
+
+                } else if(supertypeName.equals("Serializable")) {
+                    sb.append("dest?.writeSerializable(")
+                            .append(fieldName)
+                            .append(")\n");
+                    isParcelableOrSerializable = true;
+                    break;
+                }
+            }
+
+            if(!isParcelableOrSerializable) {
+                if (typeName.equals("Boolean")) {
+                    sb.append("dest?.writeByte((if(")
+                            .append(fieldName)
+                            .append(") 1 else 0).toByte()) \n");
+
+                } else {
+                    sb.append("dest?.write")
+                            .append(typeName)
+                            .append("(this.")
+                            .append(fieldName)
+                            .append(") \n");
+                }
             }
         }
 
