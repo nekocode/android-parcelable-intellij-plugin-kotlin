@@ -192,16 +192,16 @@ public class CodeGenerator {
 
         // Check if already implement Parceable
         Boolean implementedParceable = false;
-        List<KtDelegationSpecifier> delegationSpecifiers = mClass.getDelegationSpecifiers();
-        for(KtDelegationSpecifier delegationSpecifier : delegationSpecifiers) {
-            if(delegationSpecifier.getText().equals("Parcelable")) {
+        List<KtSuperTypeListEntry> superTypeList = mClass.getSuperTypeListEntries();
+        for(KtSuperTypeListEntry superTypeListEntry : superTypeList) {
+            if(superTypeListEntry.getText().equals("Parcelable")) {
                 implementedParceable = true;
             }
         }
 
         if(!implementedParceable) {
             // Implement Parceable
-            if(delegationSpecifiers.size() > 0) {
+            if(superTypeList.size() > 0) {
                 mClass.addAfter(elementFactory.createComma(), mClass.getLastChild());
             }
 
