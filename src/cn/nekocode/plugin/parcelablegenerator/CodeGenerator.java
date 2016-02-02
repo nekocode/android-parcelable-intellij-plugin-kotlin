@@ -191,22 +191,10 @@ public class CodeGenerator {
                     break;
 
                 default:
-                    // Check if supertype is Parcelable or Serializable
-                    Collection<KotlinType> supertypes = type.getConstructor().getSupertypes();
-                    for(KotlinType supertype : supertypes) {
-                        String supertypeName = supertype.toString();
-                        if(supertypeName.equals("Parcelable")) {
-                            typeSerializers.add(new ParcelableObjectSerializer(field));
-                            break;
+                    Collection<KotlinType> supertypes = null;
 
-                        } else if(supertypeName.equals("Serializable")) {
-                            typeSerializers.add(new SerializableObjectSerializer(field));
-                            break;
-                        }
-                    }
-
-                    // Check if type is List
-                    if(typeName.contains("List")) {
+                    // Check if type is List or Array
+                    if(typeName.startsWith("List")) {
                         KotlinType typeProjectionType = type.getArguments().get(0).getType();
 
                         Boolean isParcelable = false;
@@ -222,6 +210,35 @@ public class CodeGenerator {
 
                         if(!isParcelable) {
                             typeSerializers.add(new NormalListSerializer(field));
+                        }
+
+
+                    } else if(typeName.startsWith("Array")) {
+                        KotlinType typeProjectionType = type.getArguments().get(0).getType();
+
+                        supertypes = typeProjectionType.getConstructor().getSupertypes();
+                        for(KotlinType supertype : supertypes) {
+                            String supertypeName = supertype.toString();
+                            if(supertypeName.equals("Parcelable")) {
+                                typeSerializers.add(new ParcelableArraySerializer(field));
+                                break;
+                            }
+                        }
+
+
+                    } else {
+                        // Check if supertype is Parcelable or Serializable
+                        supertypes = type.getConstructor().getSupertypes();
+                        for(KotlinType supertype : supertypes) {
+                            String supertypeName = supertype.toString();
+                            if(supertypeName.equals("Parcelable")) {
+                                typeSerializers.add(new ParcelableObjectSerializer(field));
+                                break;
+
+                            } else if(supertypeName.equals("Serializable")) {
+                                typeSerializers.add(new SerializableObjectSerializer(field));
+                                break;
+                            }
                         }
                     }
             }
