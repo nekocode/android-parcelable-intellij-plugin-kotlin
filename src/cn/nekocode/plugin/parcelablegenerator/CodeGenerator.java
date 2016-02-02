@@ -179,6 +179,17 @@ public class CodeGenerator {
                     typeSerializers.add(new StringListSerializer(field));
                     break;
 
+                case "Array<String>":
+                case "ByteArray":
+                case "DoubleArray":
+                case "FloatArray":
+                case "IntArray":
+                case "LongArray":
+                case "CharArray":
+                case "BooleanArray":
+                    typeSerializers.add(new NormalArraySerializer(field));
+                    break;
+
                 default:
                     // Check if supertype is Parcelable or Serializable
                     Collection<KotlinType> supertypes = type.getConstructor().getSupertypes();
@@ -194,6 +205,7 @@ public class CodeGenerator {
                         }
                     }
 
+                    // Check if type is List
                     if(typeName.contains("List")) {
                         KotlinType typeProjectionType = type.getArguments().get(0).getType();
 
