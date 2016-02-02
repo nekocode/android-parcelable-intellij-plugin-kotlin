@@ -20,6 +20,7 @@ Just press ALT + Insert (or your equivalent keybinding for code generation) in y
 ## Now Suported Types
 - Types implementing `Parceable` or `Serializable`
 - Primitive Kotlin types: `String`, `Byte`, `Double`, `Float`, `Int`, `Long`, `Boolean`, `Char`
+- List of any objects **(Warning: validation is not performed)**
 
 ## License
 ```

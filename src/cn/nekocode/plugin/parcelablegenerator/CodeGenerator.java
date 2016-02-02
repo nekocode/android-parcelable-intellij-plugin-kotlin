@@ -56,7 +56,10 @@ public class CodeGenerator {
         for(TypeSerializer typeSerializer : typeSerializers) {
             content += typeSerializer.readValue() + ",";
         }
-        sb.append(content.substring(0, content.length() - 1)).append(")");
+        if(content.length() > 0) {
+            content = content.substring(0, content.length() - 1);
+        }
+        sb.append(content).append(")");
 
         return sb.toString();
     }
@@ -172,6 +175,10 @@ public class CodeGenerator {
                     typeSerializers.add(new CharSerializer(field));
                     break;
 
+                case "List<String>":
+                    typeSerializers.add(new StringListSerializer(field));
+                    break;
+
                 default:
                     Collection<KotlinType> supertypes = type.getConstructor().getSupertypes();
                     for(KotlinType supertype : supertypes) {
@@ -184,6 +191,10 @@ public class CodeGenerator {
                             typeSerializers.add(new SerializableObjectSerializer(field));
                             break;
                         }
+                    }
+
+                    if(typeName.contains("List")) {
+                        typeSerializers.add(new NormalListSerializer(field));
                     }
             }
         }
