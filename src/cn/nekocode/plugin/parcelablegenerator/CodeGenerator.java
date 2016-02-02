@@ -15,12 +15,14 @@
  */
 package cn.nekocode.plugin.parcelablegenerator;
 
+import cn.nekocode.plugin.parcelablegenerator.typeserializers.*;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
 import org.jetbrains.kotlin.psi.*;
 import org.jetbrains.kotlin.resolve.ImportPath;
 import org.jetbrains.kotlin.types.KotlinType;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -48,46 +50,14 @@ public class CodeGenerator {
                 "return arrayOfNulls(size)}" + "}}";
     }
 
-    private String generateConstructor(List<ValueParameterDescriptor> fields) {
+    private String generateConstructor(List<TypeSerializer> typeSerializers) {
         StringBuilder sb = new StringBuilder("constructor(source: Parcel): this(");
-
         String content = "";
-        for (ValueParameterDescriptor field : fields) {
-            KotlinType type = field.getType();
-            String typeName = type.toString();
-
-            // Check if supertype is Parcelable or Serializable
-            Boolean isParcelableOrSerializable = false;
-            Collection<KotlinType> supertypes = type.getConstructor().getSupertypes();
-
-            for(KotlinType supertype : supertypes) {
-                String supertypeName = supertype.toString();
-                if(supertypeName.equals("Parcelable")) {
-                    content += "source.readParcelable<" + typeName + ">(" + typeName + "::class.java.classLoader),";
-                    isParcelableOrSerializable = true;
-                    break;
-
-                } else if(supertypeName.equals("Serializable")) {
-                    content += "source.readSerializable() as " + typeName + ",";
-                    isParcelableOrSerializable = true;
-                    break;
-                }
-            }
-
-            // Other supported type
-            if(!isParcelableOrSerializable) {
-                if (typeName.equals("Boolean")) {
-                    content += "1.toByte().equals(source.readByte()),";
-
-                } else {
-                    content += "source.read" + typeName + "(),";
-                }
-            }
+        for(TypeSerializer typeSerializer : typeSerializers) {
+            content += typeSerializer.readValue() + ",";
         }
+        sb.append(content.substring(0, content.length() - 1)).append(")");
 
-        content = content.substring(0, content.length() - 1);
-
-        sb.append(content).append(")");
         return sb.toString();
     }
 
@@ -95,53 +65,11 @@ public class CodeGenerator {
         return "override fun describeContents(): Int {return 0}";
     }
 
-    private String generateWriteToParcel(List<ValueParameterDescriptor> fields) {
+    private String generateWriteToParcel(List<TypeSerializer> typeSerializers) {
         StringBuilder sb = new StringBuilder("override fun writeToParcel(dest: Parcel?, flags: Int) {");
-
-        for (ValueParameterDescriptor field : fields) {
-            KotlinType type = field.getType();
-            String typeName = type.toString();
-            String fieldName = field.getName().toString();
-
-            // Check if supertype is Parcelable or Serializable
-            Boolean isParcelableOrSerializable = false;
-            Collection<KotlinType> supertypes = type.getConstructor().getSupertypes();
-
-            for(KotlinType supertype : supertypes) {
-                String supertypeName = supertype.toString();
-                if(supertypeName.equals("Parcelable")) {
-                    sb.append("dest?.writeParcelable(this.")
-                            .append(fieldName)
-                            .append(", 0)\n");
-                    isParcelableOrSerializable = true;
-                    break;
-
-                } else if(supertypeName.equals("Serializable")) {
-                    sb.append("dest?.writeSerializable(")
-                            .append(fieldName)
-                            .append(")\n");
-                    isParcelableOrSerializable = true;
-                    break;
-                }
-            }
-
-            // Other supported type
-            if(!isParcelableOrSerializable) {
-                if (typeName.equals("Boolean")) {
-                    sb.append("dest?.writeByte((if(")
-                            .append(fieldName)
-                            .append(") 1 else 0).toByte()) \n");
-
-                } else {
-                    sb.append("dest?.write")
-                            .append(typeName)
-                            .append("(this.")
-                            .append(fieldName)
-                            .append(") \n");
-                }
-            }
+        for(TypeSerializer typeSerializer : typeSerializers) {
+            sb.append(typeSerializer.writeValue()).append("\n");
         }
-
         sb.append("}");
 
         return sb.toString();
@@ -209,12 +137,56 @@ public class CodeGenerator {
             mClass.addAfter(elementFactory.createWhiteSpace(), mClass.getLastChild());
         }
 
-        String block = generateConstructor(mFields) + "\n\n" +
+
+        List<TypeSerializer> typeSerializers = getTypeSerializers(mFields);
+        String block = generateConstructor(typeSerializers) + "\n\n" +
                 generateDescribeContents() + "\n\n" +
-                generateWriteToParcel(mFields) + "\n\n" +
+                generateWriteToParcel(typeSerializers) + "\n\n" +
                 generateStaticCreator(mClass);
 
         mClass.addAfter(elementFactory.createBlock(block), mClass.getLastChild());
 
+    }
+
+    private List<TypeSerializer> getTypeSerializers(List<ValueParameterDescriptor> fields) {
+        List<TypeSerializer> typeSerializers = new ArrayList<>();
+        for(ValueParameterDescriptor field : fields) {
+            KotlinType type = field.getType();
+            String typeName = type.toString();
+
+            switch (typeName) {
+                case "String":
+                case "Byte":
+                case "Double":
+                case "Float":
+                case "Int":
+                case "Long":
+                    typeSerializers.add(new NormalSerializer(field));
+                    break;
+
+                case "Boolean":
+                    typeSerializers.add(new BooleanSerializer(field));
+                    break;
+
+                case "Char":
+                    typeSerializers.add(new CharSerializer(field));
+                    break;
+
+                default:
+                    Collection<KotlinType> supertypes = type.getConstructor().getSupertypes();
+                    for(KotlinType supertype : supertypes) {
+                        String supertypeName = supertype.toString();
+                        if(supertypeName.equals("Parcelable")) {
+                            typeSerializers.add(new ParcelableObjectSerializer(field));
+                            break;
+
+                        } else if(supertypeName.equals("Serializable")) {
+                            typeSerializers.add(new SerializableObjectSerializer(field));
+                            break;
+                        }
+                    }
+            }
+        }
+        return typeSerializers;
     }
 }
