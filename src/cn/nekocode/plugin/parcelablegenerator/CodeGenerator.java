@@ -180,6 +180,7 @@ public class CodeGenerator {
                     break;
 
                 default:
+                    // Check if supertype is Parcelable or Serializable
                     Collection<KotlinType> supertypes = type.getConstructor().getSupertypes();
                     for(KotlinType supertype : supertypes) {
                         String supertypeName = supertype.toString();
@@ -194,7 +195,22 @@ public class CodeGenerator {
                     }
 
                     if(typeName.contains("List")) {
-                        typeSerializers.add(new NormalListSerializer(field));
+                        KotlinType typeProjectionType = type.getArguments().get(0).getType();
+
+                        Boolean isParcelable = false;
+                        supertypes = typeProjectionType.getConstructor().getSupertypes();
+                        for(KotlinType supertype : supertypes) {
+                            String supertypeName = supertype.toString();
+                            if(supertypeName.equals("Parcelable")) {
+                                typeSerializers.add(new ParcelableListSerializer(field));
+                                isParcelable = true;
+                                break;
+                            }
+                        }
+
+                        if(!isParcelable) {
+                            typeSerializers.add(new NormalListSerializer(field));
+                        }
                     }
             }
         }
