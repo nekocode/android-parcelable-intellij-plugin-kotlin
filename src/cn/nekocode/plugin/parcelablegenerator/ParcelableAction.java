@@ -19,6 +19,7 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.*;
 
 import java.util.ArrayList;
@@ -45,12 +46,20 @@ public class ParcelableAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         KtClass ktClass = getPsiClassFromEvent(e);
 
-//        GenerateDialog dlg = new GenerateDialog(ktClass);
-//        dlg.show();
+        if(ktClass != null) {
+            String text = ktClass.getText();
 
-//        if (dlg.isOK()) {
-        generateParcelable(ktClass, findParams(ktClass));
-//        }
+            if(!text.startsWith("data")) {
+                Messages.showErrorDialog("ParcelableGenerator only support for data class.", "Sorry");
+
+            } else {
+//                GenerateDialog dlg = new GenerateDialog(ktClass);
+//                dlg.show();
+//                if (dlg.isOK()) {
+                generateParcelable(ktClass, findParams(ktClass));
+//                }
+            }
+        }
     }
 
 //    private static final String[] SUPPORTED_TYPE = {"Boolean", "Byte", "Char", "Double", "Float", "Int", "Long", "String", "SparseBooleanArray"};
