@@ -235,17 +235,25 @@ public class CodeGenerator {
 
                     } else {
                         // Check if supertype is Parcelable or Serializable
+                        boolean found = false;
                         supertypes = type.getConstructor().getSupertypes();
                         for(KotlinType supertype : supertypes) {
                             String supertypeName = supertype.toString();
                             if(supertypeName.equals("Parcelable")) {
                                 typeSerializers.add(new ParcelableObjectSerializer(field));
+                                found = true;
                                 break;
 
                             } else if(supertypeName.equals("Serializable")) {
                                 typeSerializers.add(new SerializableObjectSerializer(field));
+                                found = true;
                                 break;
                             }
+                        }
+
+                        // Not found
+                        if(!found) {
+                            typeSerializers.add(new NormalSerializer(field));
                         }
                     }
             }

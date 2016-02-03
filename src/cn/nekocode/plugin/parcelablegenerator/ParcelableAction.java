@@ -56,13 +56,12 @@ public class ParcelableAction extends AnAction {
 //                GenerateDialog dlg = new GenerateDialog(ktClass);
 //                dlg.show();
 //                if (dlg.isOK()) {
-                generateParcelable(ktClass, findParams(ktClass));
+                    generateParcelable(ktClass, findParams(ktClass));
 //                }
             }
         }
     }
 
-//    private static final String[] SUPPORTED_TYPE = {"Boolean", "Byte", "Char", "Double", "Float", "Int", "Long", "String", "SparseBooleanArray"};
     private List<ValueParameterDescriptor> findParams(PsiElement element) {
         List<KtElement> list = new ArrayList<>();
         list.add((KtElement) element);
