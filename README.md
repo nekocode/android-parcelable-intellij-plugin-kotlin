@@ -15,7 +15,7 @@ It depend on `kotlin-plugin` in version **`1.0.0-beta-4589`** or a newer version
 ## Usage
 Just press ALT + Insert (or your equivalent keybinding for code generation) in your editor and select Parcelable. It will auto generate Parcelable boilerplate code for your data class.  
 
-![](art/uasge.gif)
+![](art/usage.gif)
 
 ## Now Suported Types
 - Types implementing `Parceable` or `Serializable`
