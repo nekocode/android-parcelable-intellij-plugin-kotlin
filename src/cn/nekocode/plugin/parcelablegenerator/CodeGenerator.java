@@ -87,6 +87,7 @@ public class CodeGenerator {
         // Check if already imported Parcel and Parcelable
         boolean importedParcelable = false;
         boolean importedParcel = false;
+        boolean importedJavaUtil = false;
         List<KtImportDirective> importList = parent.getImportDirectives();
         for(KtImportDirective importDirective : importList) {
             ImportPath importPath = importDirective.getImportPath();
@@ -98,6 +99,9 @@ public class CodeGenerator {
                 if(pathStr.equals("android.os.Parcel")) {
                     importedParcel = true;
                 }
+                if(pathStr.equals("java.util.*")) {
+                    importedJavaUtil = true;
+                }
             }
         }
 
@@ -106,6 +110,9 @@ public class CodeGenerator {
         }
         if(!importedParcel) {
             parent.addAfter(elementFactory.createImportDirective(new ImportPath("android.os.Parcel")), parent.getFirstChild());
+        }
+        if(!importedJavaUtil) {
+            parent.addAfter(elementFactory.createImportDirective(new ImportPath("java.util.*")), parent.getFirstChild());
         }
 
 
