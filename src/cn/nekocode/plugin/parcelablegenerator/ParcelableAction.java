@@ -15,6 +15,7 @@
  */
 package cn.nekocode.plugin.parcelablegenerator;
 
+import com.intellij.ide.projectView.impl.ProjectRootsUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
@@ -27,12 +28,11 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.kotlin.asJava.KtLightElement;
+import org.jetbrains.kotlin.caches.resolve.KotlinCacheService;
 import org.jetbrains.kotlin.descriptors.ClassDescriptor;
 import org.jetbrains.kotlin.descriptors.ConstructorDescriptor;
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
-import org.jetbrains.kotlin.idea.caches.resolve.KotlinCacheService;
 import org.jetbrains.kotlin.idea.internal.Location;
-import org.jetbrains.kotlin.idea.util.ProjectRootsUtil;
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation;
 import org.jetbrains.kotlin.psi.*;
 import org.jetbrains.kotlin.resolve.lazy.ResolveSession;
@@ -47,16 +47,14 @@ public class ParcelableAction extends AnAction {
         KtClass ktClass = getPsiClassFromEvent(e);
 
         if(ktClass != null) {
-            String text = ktClass.getText();
-
-            if(!text.startsWith("data")) {
+            if(!ktClass.isData()) {
                 Messages.showErrorDialog("ParcelableGenerator only support for data class.", "Sorry");
 
             } else {
 //                GenerateDialog dlg = new GenerateDialog(ktClass);
 //                dlg.show();
 //                if (dlg.isOK()) {
-                    generateParcelable(ktClass, findParams(ktClass));
+                generateParcelable(ktClass, findParams(ktClass));
 //                }
             }
         }
@@ -66,7 +64,7 @@ public class ParcelableAction extends AnAction {
         List<KtElement> list = new ArrayList<>();
         list.add((KtElement) element);
 
-        ResolveSession resolveSession = KotlinCacheService.getInstance(element.getProject()).
+        ResolveSession resolveSession = KotlinCacheService.Companion.getInstance(element.getProject()).
                 getResolutionFacade(list).getFrontendService(ResolveSession.class);
         ClassDescriptor classDescriptor = resolveSession.getClassDescriptor((KtClassOrObject) element, NoLookupLocation.FROM_IDE);
 
@@ -108,7 +106,7 @@ public class ParcelableAction extends AnAction {
         if (project == null) return null;
 
         PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
-        if (psiFile == null || !(psiFile instanceof KtFile) || !ProjectRootsUtil.isInProjectSource(psiFile))
+        if (psiFile == null || !(psiFile instanceof KtFile) || ProjectRootsUtil.isOutsideSourceRoot(psiFile))
             return null;
 
         Location location = Location.fromEditor(editor, project);

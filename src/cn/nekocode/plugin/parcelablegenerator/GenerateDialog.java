@@ -15,6 +15,7 @@
  */
 package cn.nekocode.plugin.parcelablegenerator;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.psi.PsiElement;
@@ -22,13 +23,12 @@ import com.intellij.ui.CollectionListModel;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.kotlin.caches.resolve.KotlinCacheService;
 import org.jetbrains.kotlin.descriptors.ClassDescriptor;
 import org.jetbrains.kotlin.descriptors.ConstructorDescriptor;
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
-import org.jetbrains.kotlin.idea.caches.resolve.KotlinCacheService;
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation;
 import org.jetbrains.kotlin.psi.KtClass;
-import org.jetbrains.kotlin.psi.KtClassOrObject;
 import org.jetbrains.kotlin.psi.KtElement;
 import org.jetbrains.kotlin.resolve.lazy.ResolveSession;
 
@@ -45,11 +45,11 @@ public class GenerateDialog extends DialogWrapper {
     private final LabeledComponent<JPanel> myComponent;
     private CollectionListModel<ValueParameterDescriptor> myFileds;
 
-    protected GenerateDialog(KtClass ktClass) {
-        super(ktClass.getProject());
+    protected GenerateDialog(Project project, KtClass ktClass) {
+        super(project);
         setTitle("Select Fields for Parcelable Generation");
 
-        myFileds = new CollectionListModel<>(findParams(ktClass));
+        myFileds = new CollectionListModel<ValueParameterDescriptor>(findParams(ktClass));
 
         JBList fieldList = new JBList(myFileds);
         fieldList.setCellRenderer(new DefaultListCellRenderer() {
@@ -75,9 +75,9 @@ public class GenerateDialog extends DialogWrapper {
         List<KtElement> list = new ArrayList<>();
         list.add((KtElement) element);
 
-        ResolveSession resolveSession = KotlinCacheService.getInstance(element.getProject()).
+        ResolveSession resolveSession = KotlinCacheService.Companion.getInstance(element.getProject()).
                 getResolutionFacade(list).getFrontendService(ResolveSession.class);
-        ClassDescriptor classDescriptor = resolveSession.getClassDescriptor((KtClassOrObject) element, NoLookupLocation.FROM_IDE);
+        ClassDescriptor classDescriptor = resolveSession.getClassDescriptor((KtClass) element, NoLookupLocation.FROM_IDE);
 
         List<ValueParameterDescriptor> valueParameters = new ArrayList<>();
         if (classDescriptor.isData()) {
