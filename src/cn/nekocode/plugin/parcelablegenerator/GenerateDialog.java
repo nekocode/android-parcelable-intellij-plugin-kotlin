@@ -15,26 +15,18 @@
  */
 package cn.nekocode.plugin.parcelablegenerator;
 
-import com.intellij.openapi.project.Project;
+import cn.nekocode.plugin.parcelablegenerator.utils.KtClassHelper;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.LabeledComponent;
-import com.intellij.psi.PsiElement;
 import com.intellij.ui.CollectionListModel;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.kotlin.caches.resolve.KotlinCacheService;
-import org.jetbrains.kotlin.descriptors.ClassDescriptor;
-import org.jetbrains.kotlin.descriptors.ConstructorDescriptor;
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
-import org.jetbrains.kotlin.incremental.components.NoLookupLocation;
 import org.jetbrains.kotlin.psi.KtClass;
-import org.jetbrains.kotlin.psi.KtElement;
-import org.jetbrains.kotlin.resolve.lazy.ResolveSession;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,11 +37,11 @@ public class GenerateDialog extends DialogWrapper {
     private final LabeledComponent<JPanel> myComponent;
     private CollectionListModel<ValueParameterDescriptor> myFileds;
 
-    protected GenerateDialog(Project project, KtClass ktClass) {
-        super(project);
+    protected GenerateDialog(KtClass ktClass) {
+        super(ktClass.getProject());
         setTitle("Select Fields for Parcelable Generation");
 
-        myFileds = new CollectionListModel<ValueParameterDescriptor>(findParams(ktClass));
+        myFileds = new CollectionListModel<>(KtClassHelper.findParams(ktClass));
 
         JBList fieldList = new JBList(myFileds);
         fieldList.setCellRenderer(new DefaultListCellRenderer() {
@@ -69,28 +61,6 @@ public class GenerateDialog extends DialogWrapper {
         myComponent = LabeledComponent.create(panel, "Fields to include in Parcelable");
 
         init();
-    }
-
-    private List<ValueParameterDescriptor> findParams(PsiElement element) {
-        List<KtElement> list = new ArrayList<>();
-        list.add((KtElement) element);
-
-        ResolveSession resolveSession = KotlinCacheService.Companion.getInstance(element.getProject()).
-                getResolutionFacade(list).getFrontendService(ResolveSession.class);
-        ClassDescriptor classDescriptor = resolveSession.getClassDescriptor((KtClass) element, NoLookupLocation.FROM_IDE);
-
-        List<ValueParameterDescriptor> valueParameters = new ArrayList<>();
-        if (classDescriptor.isData()) {
-            ConstructorDescriptor constructorDescriptor = classDescriptor.getUnsubstitutedPrimaryConstructor();
-
-            if (constructorDescriptor != null) {
-                List<ValueParameterDescriptor> allParameters = constructorDescriptor.getValueParameters();
-
-                allParameters.stream().forEach(valueParameters::add);
-            }
-        }
-
-        return valueParameters;
     }
 
     @Nullable

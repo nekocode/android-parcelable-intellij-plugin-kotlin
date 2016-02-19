@@ -15,6 +15,7 @@
  */
 package cn.nekocode.plugin.parcelablegenerator;
 
+import cn.nekocode.plugin.parcelablegenerator.utils.KtClassHelper;
 import com.intellij.ide.projectView.impl.ProjectRootsUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -23,19 +24,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.kotlin.asJava.KtLightElement;
-import org.jetbrains.kotlin.caches.resolve.KotlinCacheService;
-import org.jetbrains.kotlin.descriptors.ClassDescriptor;
-import org.jetbrains.kotlin.descriptors.ConstructorDescriptor;
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
 import org.jetbrains.kotlin.idea.internal.Location;
-import org.jetbrains.kotlin.incremental.components.NoLookupLocation;
 import org.jetbrains.kotlin.psi.*;
-import org.jetbrains.kotlin.resolve.lazy.ResolveSession;
 
 /**
  * Created by nekocode on 2015/12/1.
@@ -54,32 +47,12 @@ public class ParcelableAction extends AnAction {
 //                GenerateDialog dlg = new GenerateDialog(ktClass);
 //                dlg.show();
 //                if (dlg.isOK()) {
-                generateParcelable(ktClass, findParams(ktClass));
+//                    generateParcelable(ktClass, dlg.getSelectedFields());
 //                }
+
+                generateParcelable(ktClass, KtClassHelper.findParams(ktClass));
             }
         }
-    }
-
-    private List<ValueParameterDescriptor> findParams(PsiElement element) {
-        List<KtElement> list = new ArrayList<>();
-        list.add((KtElement) element);
-
-        ResolveSession resolveSession = KotlinCacheService.Companion.getInstance(element.getProject()).
-                getResolutionFacade(list).getFrontendService(ResolveSession.class);
-        ClassDescriptor classDescriptor = resolveSession.getClassDescriptor((KtClassOrObject) element, NoLookupLocation.FROM_IDE);
-
-        List<ValueParameterDescriptor> valueParameters = new ArrayList<>();
-        if (classDescriptor.isData()) {
-            ConstructorDescriptor constructorDescriptor = classDescriptor.getUnsubstitutedPrimaryConstructor();
-
-            if (constructorDescriptor != null) {
-                List<ValueParameterDescriptor> allParameters = constructorDescriptor.getValueParameters();
-
-                allParameters.stream().forEach(valueParameters::add);
-            }
-        }
-
-        return valueParameters;
     }
 
     private void generateParcelable(final KtClass ktClass, final List<ValueParameterDescriptor> fields) {
@@ -113,31 +86,6 @@ public class ParcelableAction extends AnAction {
         PsiElement psiElement = psiFile.findElementAt(location.getStartOffset());
         if (psiElement == null) return null;
 
-        return getKtClass(psiElement);
-    }
-
-    private KtClass getKtClass(@NotNull PsiElement psiElement) {
-        if (psiElement instanceof KtLightElement) {
-            PsiElement origin = ((KtLightElement) psiElement).getOrigin();
-            if (origin != null) {
-                return getKtClass(origin);
-            } else {
-                return null;
-            }
-
-        } else if (psiElement instanceof KtClass && !((KtClass) psiElement).isEnum() &&
-                !((KtClass) psiElement).isInterface() &&
-                !((KtClass) psiElement).isAnnotation() &&
-                !((KtClass) psiElement).isSealed()) {
-            return (KtClass) psiElement;
-
-        } else {
-            PsiElement parent = psiElement.getParent();
-            if (parent == null) {
-                return null;
-            } else {
-                return getKtClass(parent);
-            }
-        }
+        return KtClassHelper.getKtClassForElement(psiElement);
     }
 }
