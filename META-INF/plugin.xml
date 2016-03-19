@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>cn.nekocode.plugin.parcelablegenerator</id>
     <name>Parcelable Code Generator(for kotlin's data class)</name>
-    <version>0.4.2</version>
+    <version>0.4.3</version>
     <vendor email="syfyw@qq.com" url="https://github.com/nekocode/android-parcelable-intellij-plugin-kotlin">nekocode</vendor>
 
     <description><![CDATA[
