@@ -1,9 +1,6 @@
 out/*
 lib/*
-.idea/dictionaries/*
-.idea/inspectionProfiles/*
-.idea/workspace.xml
-.idea/tasks.xml
+.idea
 .DS_Store
 workdir/*
 /*.jar
