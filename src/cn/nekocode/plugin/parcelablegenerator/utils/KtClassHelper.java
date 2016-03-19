@@ -49,7 +49,9 @@ public class KtClassHelper {
             if (constructorDescriptor != null) {
                 List<ValueParameterDescriptor> allParameters = constructorDescriptor.getValueParameters();
 
-                allParameters.stream().forEach(valueParameters::add);
+                for(ValueParameterDescriptor parameter : allParameters) {
+                    valueParameters.add(parameter);
+                }
             }
         }
 
