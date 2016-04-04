@@ -27,10 +27,10 @@ public class BooleanSerializer extends TypeSerializer {
     }
 
     public String readValue() {
-        return "1.toByte().equals(source.readByte())";
+        return "1.equals(source.readInt())";
     }
 
     public String writeValue() {
-        return "dest?.writeByte((if(" + field.getName() + ") 1 else 0).toByte())";
+        return "dest?.writeInt((if(" + field.getName() + ") 1 else 0))";
     }
 }
