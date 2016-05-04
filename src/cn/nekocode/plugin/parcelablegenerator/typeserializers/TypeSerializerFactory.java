@@ -37,6 +37,8 @@ public class TypeSerializerFactory {
                     break;
 
                 case "List<String>":
+                case "ArrayList<String>":
+                case "MutableList<String>":
                     typeSerializers.add(new StringListSerializer(field));
                     break;
 
@@ -48,6 +50,16 @@ public class TypeSerializerFactory {
                 case "LongArray":
                 case "CharArray":
                 case "BooleanArray":
+                    typeSerializers.add(new OriginalArraySerializer(field));
+                    break;
+
+                case "Array<Byte>":
+                case "Array<Double>":
+                case "Array<Float>":
+                case "Array<Int>":
+                case "Array<Long>":
+                case "Array<Char>":
+                case "Array<Boolean>":
                     typeSerializers.add(new NormalArraySerializer(field));
                     break;
 
@@ -55,7 +67,7 @@ public class TypeSerializerFactory {
                     Collection<KotlinType> supertypes;
 
                     // Check if type is List or Array
-                    if(typeName.startsWith("List")) {
+                    if(typeName.startsWith("List") || typeName.startsWith("ArrayList") || typeName.startsWith("MutableList")) {
                         KotlinType typeProjectionType = type.getArguments().get(0).getType();
 
                         Boolean isParcelable = false;
@@ -77,13 +89,20 @@ public class TypeSerializerFactory {
                     } else if(typeName.startsWith("Array")) {
                         KotlinType typeProjectionType = type.getArguments().get(0).getType();
 
+                        boolean found = false;
                         supertypes = typeProjectionType.getConstructor().getSupertypes();
                         for(KotlinType supertype : supertypes) {
                             String supertypeName = supertype.toString();
                             if(supertypeName.equals("Parcelable")) {
                                 typeSerializers.add(new ParcelableArraySerializer(field));
+                                found = true;
                                 break;
                             }
+                        }
+
+                        // Not found
+                        if(!found) {
+                            typeSerializers.add(new NormalSerializer(field));
                         }
 
 

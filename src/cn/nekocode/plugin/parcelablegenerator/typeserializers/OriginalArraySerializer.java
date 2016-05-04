@@ -20,9 +20,9 @@ import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
 /**
  * Created by nekocode on 2016/2/2.
  */
-public class NormalArraySerializer extends TypeSerializer {
+public class OriginalArraySerializer extends TypeSerializer {
 
-    public NormalArraySerializer(ValueParameterDescriptor field) {
+    public OriginalArraySerializer(ValueParameterDescriptor field) {
         super(field);
     }
 
@@ -34,7 +34,7 @@ public class NormalArraySerializer extends TypeSerializer {
             typeProjection = field.getType().toString();
             typeProjection = typeProjection.substring(0, typeProjection.length()-5);
         }
-        return "source.create" + typeProjection + "Array().toTypedArray()";
+        return "source.create" + typeProjection + "Array()";
     }
 
     public String writeValue() {
@@ -45,6 +45,6 @@ public class NormalArraySerializer extends TypeSerializer {
             typeProjection = field.getType().toString();
             typeProjection = typeProjection.substring(0, typeProjection.length()-5);
         }
-        return "dest?.write" + typeProjection + "Array(" + field.getName() + ".to" + typeProjection + "Array())";
+        return "dest?.write" + typeProjection + "Array(" + field.getName() + ")";
     }
 }

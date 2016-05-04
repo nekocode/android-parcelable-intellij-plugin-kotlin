@@ -24,8 +24,6 @@ import org.jetbrains.kotlin.resolve.ImportPath;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cn.nekocode.plugin.parcelablegenerator.typeserializers.TypeSerializerFactory.createTypeSerializers;
-
 
 /**
  * Created by nekocode on 2015/12/1.
@@ -175,7 +173,7 @@ public class CodeGenerator {
             oldDeclarationsStr += declaration.getText() + "\n\n";
         }
 
-        List<TypeSerializer> typeSerializers = createTypeSerializers(mFields);
+        List<TypeSerializer> typeSerializers = TypeSerializerFactory.createTypeSerializers(mFields);
         String block = oldDeclarationsStr +
                 generateConstructor(typeSerializers) + "\n\n" +
                 generateDescribeContents() + "\n\n" +

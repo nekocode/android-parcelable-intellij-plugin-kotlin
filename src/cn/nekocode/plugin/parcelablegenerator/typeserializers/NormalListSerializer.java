@@ -28,7 +28,7 @@ public class NormalListSerializer extends TypeSerializer {
 
     public String readValue() {
         String typeProjection = field.getType().getArguments().get(0).getType().toString();
-        return "{val l = ArrayList<" + typeProjection + ">(); source.readList(l, " + typeProjection + "::class.java.classLoader); l}.invoke()";
+        return "ArrayList<" + typeProjection + ">().apply{ source.readList(this, " + typeProjection + "::class.java.classLoader) }";
     }
 
     public String writeValue() {
