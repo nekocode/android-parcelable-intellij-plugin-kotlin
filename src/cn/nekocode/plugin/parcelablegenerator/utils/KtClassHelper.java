@@ -60,7 +60,7 @@ public class KtClassHelper {
 
     public static KtClass getKtClassForElement(@NotNull PsiElement psiElement) {
         if (psiElement instanceof KtLightElement) {
-            PsiElement origin = ((KtLightElement) psiElement).getOrigin();
+            PsiElement origin = ((KtLightElement) psiElement).getKotlinOrigin();
             if (origin != null) {
                 return getKtClassForElement(origin);
             } else {
