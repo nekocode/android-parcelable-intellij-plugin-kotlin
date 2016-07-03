@@ -10,7 +10,7 @@ Plugin is uploaded to plugin repository. If you like, you can also install it ma
  0. Choose the downloaded jar file
 
 ### Dependencies
-It depend on `kotlin-plugin` in version **`1.0.0`** or a newer version.
+It depend on `kotlin-plugin` in version **`1.0.3`** or a newer version.
 
 ## Usage
 Just press ALT + Insert (or your equivalent keybinding for code generation) in your editor and select Parcelable. It will auto generate Parcelable boilerplate code for your data class.  
