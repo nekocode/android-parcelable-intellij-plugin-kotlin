@@ -40,12 +40,12 @@ public class CodeGenerator {
     private String generateStaticCreator(KtClass ktClass) {
         String className = ktClass.getName();
 
-        return "companion object { @JvmField final val CREATOR: Parcelable.Creator<" +
+        return "companion object { @JvmField val CREATOR: Parcelable.Creator<" +
                 className + "> = object : Parcelable.Creator<" + className + "> {" +
                 "override fun createFromParcel(source: Parcel): " + className +
-                "{return " + className + "(source)}" +
-                "override fun newArray(size: Int): Array<" + className + "?> {" +
-                "return arrayOfNulls(size)}" + "}}";
+                " = " + className + "(source)" +
+                "\noverride fun newArray(size: Int): Array<" + className + "?> =" +
+                "arrayOfNulls(size)" + "}}";
     }
 
     private String generateConstructor(List<TypeSerializer> typeSerializers) {
@@ -63,7 +63,7 @@ public class CodeGenerator {
     }
 
     private String generateDescribeContents() {
-        return "override fun describeContents(): Int {return 0}";
+        return "override fun describeContents() = 0";
     }
 
     private String generateWriteToParcel(List<TypeSerializer> typeSerializers) {
