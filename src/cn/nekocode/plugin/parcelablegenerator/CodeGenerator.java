@@ -115,7 +115,7 @@ public class CodeGenerator {
 
 
         // Save old declarations and clean Class Body
-        List<KtDeclaration> oldDeclarations = new ArrayList<>();
+        List<KtDeclaration> oldDeclarations = new ArrayList<KtDeclaration>();
         KtClassBody body = mClass.getBody();
 
         if(body != null) {

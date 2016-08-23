@@ -41,7 +41,7 @@ public class GenerateDialog extends DialogWrapper {
         super(ktClass.getProject());
         setTitle("Select Fields for Parcelable Generation");
 
-        myFileds = new CollectionListModel<>(KtClassHelper.findParams(ktClass));
+        myFileds = new CollectionListModel<ValueParameterDescriptor>(KtClassHelper.findParams(ktClass));
 
         JBList fieldList = new JBList(myFileds);
         fieldList.setCellRenderer(new DefaultListCellRenderer() {

@@ -35,14 +35,14 @@ import java.util.List;
  */
 public class KtClassHelper {
     public static List<ValueParameterDescriptor> findParams(KtClass ktClass) {
-        List<KtElement> list = new ArrayList<>();
+        List<KtElement> list = new ArrayList<KtElement>();
         list.add(ktClass);
 
         ResolveSession resolveSession = KotlinCacheService.Companion.getInstance(ktClass.getProject()).
                 getResolutionFacade(list).getFrontendService(ResolveSession.class);
         ClassDescriptor classDescriptor = resolveSession.getClassDescriptor(ktClass, NoLookupLocation.FROM_IDE);
 
-        List<ValueParameterDescriptor> valueParameters = new ArrayList<>();
+        List<ValueParameterDescriptor> valueParameters = new ArrayList<ValueParameterDescriptor>();
         if (classDescriptor.isData()) {
             ConstructorDescriptor constructorDescriptor = classDescriptor.getUnsubstitutedPrimaryConstructor();
 
