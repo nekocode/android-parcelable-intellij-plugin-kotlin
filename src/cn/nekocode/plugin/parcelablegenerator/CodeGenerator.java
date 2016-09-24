@@ -37,10 +37,19 @@ public class CodeGenerator {
         mFields = fields;
     }
 
-    private String generateStaticCreator(KtClass ktClass) {
+    private String generateStaticCreator(KtClass ktClass, KtClassBody oldBodyOfCompanion) {
         String className = ktClass.getName();
 
-        return "companion object { @JvmField val CREATOR: Parcelable.Creator<" +
+        StringBuilder oldBodyText = new StringBuilder();
+        List<KtDeclaration> declarations = oldBodyOfCompanion.getDeclarations();
+        for (KtDeclaration declaration : declarations) {
+            String declarationName = declaration.getName();
+            if (declarationName != null && !declarationName.equals("CREATOR")) {
+                oldBodyText.append(declaration.getText()).append("\n\n");
+            }
+        }
+
+        return "companion object { " + oldBodyText + "@JvmField val CREATOR: Parcelable.Creator<" +
                 className + "> = object : Parcelable.Creator<" + className + "> {" +
                 "override fun createFromParcel(source: Parcel): " + className +
                 " = " + className + "(source)" +
@@ -49,7 +58,7 @@ public class CodeGenerator {
     }
 
     private String generateConstructor(List<TypeSerializer> typeSerializers) {
-        StringBuilder sb = new StringBuilder("constructor(source: Parcel): this(");
+        StringBuilder sb = new StringBuilder("constructor(source: Parcel) : this(");
         String content = "";
         for(TypeSerializer typeSerializer : typeSerializers) {
             content += typeSerializer.readValue() + ",";
@@ -116,16 +125,36 @@ public class CodeGenerator {
 
         // Save old declarations and clean Class Body
         List<KtDeclaration> oldDeclarations = new ArrayList<KtDeclaration>();
-        KtClassBody body = mClass.getBody();
+        KtClassBody oldBodyOfCompanion = null;
 
+        KtClassBody body = mClass.getBody();
         if(body != null) {
             List<KtDeclaration> declarations = body.getDeclarations();
 
             if(declarations.size() != 0) {
                 for(KtDeclaration declaration: declarations) {
                     if(declaration instanceof KtSecondaryConstructor) {
+                        KtSecondaryConstructor constructor = (KtSecondaryConstructor) declaration;
+
+                        PsiElement[] valueParameters = constructor.getChildren()[0].getChildren();
+                        if (valueParameters.length == 1) {
+                            KtTypeReference typeReference = ((KtParameter) valueParameters[0]).getTypeReference();
+                            if (typeReference != null && typeReference.getText().equals("Parcel")) {
+                                // Skip if is the Parcel constructor
+                                continue;
+                            }
+                        }
+
+                        oldDeclarations.add(declaration);
 
                     } else if(declaration instanceof KtObjectDeclaration) {
+                        KtObjectDeclaration objectDeclaration = (KtObjectDeclaration) declaration;
+                        if (objectDeclaration.isCompanion()) {
+                            oldBodyOfCompanion = objectDeclaration.getBody();
+
+                        } else {
+                            oldDeclarations.add(declaration);
+                        }
 
                     } else if(declaration instanceof KtNamedFunction) {
                         String name = declaration.getName();
@@ -168,17 +197,17 @@ public class CodeGenerator {
         }
 
         // Add old declarations
-        String oldDeclarationsStr = "";
+        StringBuilder oldDeclarationsStr = new StringBuilder();
         for(KtDeclaration declaration: oldDeclarations) {
-            oldDeclarationsStr += declaration.getText() + "\n\n";
+            oldDeclarationsStr.append(declaration.getText()).append("\n\n");
         }
 
         List<TypeSerializer> typeSerializers = TypeSerializerFactory.createTypeSerializers(mFields);
         String block = oldDeclarationsStr +
+                generateStaticCreator(mClass, oldBodyOfCompanion) + "\n\n" +
                 generateConstructor(typeSerializers) + "\n\n" +
                 generateDescribeContents() + "\n\n" +
-                generateWriteToParcel(typeSerializers) + "\n\n" +
-                generateStaticCreator(mClass);
+                generateWriteToParcel(typeSerializers);
 
         mClass.addAfter(elementFactory.createBlock(block), mClass.getLastChild());
     }

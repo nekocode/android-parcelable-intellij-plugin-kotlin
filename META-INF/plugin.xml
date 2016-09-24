@@ -5,7 +5,7 @@
     <vendor email="syfyw@qq.com" url="https://github.com/nekocode/android-parcelable-intellij-plugin-kotlin">nekocode</vendor>
 
     <description><![CDATA[
-      <a href="https://github.com/nekocode/android-parcelable-intellij-plugin-kotlin">Parcelable Code Generator</a> is a plugin which generates Android Parcelable boilerplate code for <strong>kotlin</strong>.</br>
+      <a href="https://github.com/nekocode/android-parcelable-intellij-plugin-kotlin">Parcelable Code Generator</a> is a plugin which generates Android Parcelable boilerplate code for <strong>kotlin class</strong>.</br>
     ]]></description>
 
     <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->

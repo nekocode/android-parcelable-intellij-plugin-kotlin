@@ -1,4 +1,7 @@
-# Android Parcelable boilerplate code generation( for kotlin's data class)
+# Android Parcelable boilerplate code generation
+
+**#2016.9.24# Not only for data class now!**
+
 **Inspired by [android-parcelable-intellij-plugin](https://github.com/mcharmas/android-parcelable-intellij-plugin)**
 
 ## Installation
@@ -10,10 +13,10 @@ Plugin is uploaded to plugin repository. If you like, you can also install it ma
  0. Choose the downloaded jar file
 
 ### Dependencies
-It depend on `kotlin-plugin` in version **`1.0.3`** or a newer version.
+It depend on `kotlin-plugin` in version **`1.0.4`** or a newer version.
 
 ## Usage
-Just press ALT + Insert (or your equivalent keybinding for code generation) in your editor and select Parcelable. It will auto generate Parcelable boilerplate code for your data class.  
+Just press ALT + Insert (or your equivalent keybinding for code generation) in your editor and select Parcelable. It will auto generate Parcelable boilerplate code for your class.
 
 ![](art/usage.gif)
 

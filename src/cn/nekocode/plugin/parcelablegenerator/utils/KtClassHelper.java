@@ -43,7 +43,7 @@ public class KtClassHelper {
         ClassDescriptor classDescriptor = resolveSession.getClassDescriptor(ktClass, NoLookupLocation.FROM_IDE);
 
         List<ValueParameterDescriptor> valueParameters = new ArrayList<ValueParameterDescriptor>();
-        if (classDescriptor.isData()) {
+//        if (classDescriptor.isData()) {
             ConstructorDescriptor constructorDescriptor = classDescriptor.getUnsubstitutedPrimaryConstructor();
 
             if (constructorDescriptor != null) {
@@ -53,7 +53,7 @@ public class KtClassHelper {
                     valueParameters.add(parameter);
                 }
             }
-        }
+//        }
 
         return valueParameters;
     }

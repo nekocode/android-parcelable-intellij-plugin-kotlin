@@ -40,10 +40,10 @@ public class ParcelableAction extends AnAction {
         KtClass ktClass = getPsiClassFromEvent(e);
 
         if(ktClass != null) {
-            if(!ktClass.isData()) {
-                Messages.showErrorDialog("ParcelableGenerator only support for data class.", "Sorry");
-
-            } else {
+//            if(!ktClass.isData()) {
+//                Messages.showErrorDialog("ParcelableGenerator only support for data class.", "Sorry");
+//
+//            } else {
 //                GenerateDialog dlg = new GenerateDialog(ktClass);
 //                dlg.show();
 //                if (dlg.isOK()) {
@@ -51,7 +51,7 @@ public class ParcelableAction extends AnAction {
 //                }
 
                 generateParcelable(ktClass, KtClassHelper.findParams(ktClass));
-            }
+//            }
         }
     }
 
