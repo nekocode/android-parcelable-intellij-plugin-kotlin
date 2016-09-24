@@ -17,7 +17,7 @@ package cn.nekocode.plugin.parcelablegenerator.utils;
 
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.kotlin.asJava.KtLightElement;
+import org.jetbrains.kotlin.asJava.elements.KtLightElement;
 import org.jetbrains.kotlin.caches.resolve.KotlinCacheService;
 import org.jetbrains.kotlin.descriptors.ClassDescriptor;
 import org.jetbrains.kotlin.descriptors.ConstructorDescriptor;

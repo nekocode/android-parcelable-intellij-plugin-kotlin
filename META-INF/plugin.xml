@@ -1,11 +1,11 @@
 <idea-plugin version="2">
     <id>cn.nekocode.plugin.parcelablegenerator</id>
-    <name>Parcelable Code Generator(for kotlin's data class)</name>
-    <version>0.4.7</version>
+    <name>Parcelable Code Generator(for kotlin)</name>
+    <version>0.5.0</version>
     <vendor email="syfyw@qq.com" url="https://github.com/nekocode/android-parcelable-intellij-plugin-kotlin">nekocode</vendor>
 
     <description><![CDATA[
-      <a href="https://github.com/nekocode/android-parcelable-intellij-plugin-kotlin">Parcelable Code Generator</a> is a plugin which generates Android Parcelable boilerplate code for <strong>kotlin's data class</strong>.</br>
+      <a href="https://github.com/nekocode/android-parcelable-intellij-plugin-kotlin">Parcelable Code Generator</a> is a plugin which generates Android Parcelable boilerplate code for <strong>kotlin</strong>.</br>
     ]]></description>
 
     <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
@@ -34,7 +34,7 @@
     <actions>
         <action id="generateParcelableKotlin" class="cn.nekocode.plugin.parcelablegenerator.ParcelableAction"
                 text="Parcelable(kotlin)"
-                description="Generates Android Parcelable based on kotlin data class fields">
+                description="Generates Android Parcelable based on kotlin class fields">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
     </actions>
