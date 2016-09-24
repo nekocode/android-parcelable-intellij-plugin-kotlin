@@ -41,11 +41,13 @@ public class CodeGenerator {
         String className = ktClass.getName();
 
         StringBuilder oldBodyText = new StringBuilder();
-        List<KtDeclaration> declarations = oldBodyOfCompanion.getDeclarations();
-        for (KtDeclaration declaration : declarations) {
-            String declarationName = declaration.getName();
-            if (declarationName != null && !declarationName.equals("CREATOR")) {
-                oldBodyText.append(declaration.getText()).append("\n\n");
+        if (oldBodyOfCompanion != null) {
+            List<KtDeclaration> declarations = oldBodyOfCompanion.getDeclarations();
+            for (KtDeclaration declaration : declarations) {
+                String declarationName = declaration.getName();
+                if (declarationName != null && !declarationName.equals("CREATOR")) {
+                    oldBodyText.append(declaration.getText()).append("\n\n");
+                }
             }
         }
 
