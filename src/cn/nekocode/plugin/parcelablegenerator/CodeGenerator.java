@@ -18,12 +18,14 @@ package cn.nekocode.plugin.parcelablegenerator;
 import cn.nekocode.plugin.parcelablegenerator.typeserializers.*;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
+import org.jetbrains.kotlin.idea.caches.resolve.ResolutionUtils;
+import org.jetbrains.kotlin.idea.util.ImportInsertHelper;
+import org.jetbrains.kotlin.name.FqName;
 import org.jetbrains.kotlin.psi.*;
 import org.jetbrains.kotlin.resolve.ImportPath;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Created by nekocode on 2015/12/1.
@@ -87,17 +89,22 @@ public class CodeGenerator {
         return sb.toString();
     }
 
+    private void insertImport(KtFile ktFile, String fqName) {
+        ImportInsertHelper.getInstance(ktFile.getProject())
+                .importDescriptor(
+                        ktFile,
+                        ResolutionUtils.resolveImportReference(
+                                ktFile, new FqName(fqName)
+                        ).iterator().next(),
+                        false
+                );
+    }
 
-    public void generate() {
-        KtPsiFactory elementFactory = new KtPsiFactory(mClass.getProject());
-
-        KtFile parent = mClass.getContainingKtFile();
-
+    private void insertImports(KtFile ktFile) {
         // Check if already imported Parcel and Parcelable
         boolean importedParcelable = false;
         boolean importedParcel = false;
-        boolean importedJavaUtil = false;
-        List<KtImportDirective> importList = parent.getImportDirectives();
+        List<KtImportDirective> importList = ktFile.getImportDirectives();
         for(KtImportDirective importDirective : importList) {
             ImportPath importPath = importDirective.getImportPath();
             if(importPath != null) {
@@ -108,22 +115,23 @@ public class CodeGenerator {
                 if(pathStr.equals("android.os.Parcel")) {
                     importedParcel = true;
                 }
-                if(pathStr.equals("java.util.*")) {
-                    importedJavaUtil = true;
-                }
             }
         }
 
         if(!importedParcelable) {
-            parent.addAfter(elementFactory.createImportDirective(new ImportPath("android.os.Parcelable")), parent.getFirstChild());
+            insertImport(ktFile, "android.os.Parcelable");
         }
         if(!importedParcel) {
-            parent.addAfter(elementFactory.createImportDirective(new ImportPath("android.os.Parcel")), parent.getFirstChild());
+            insertImport(ktFile, "android.os.Parcel");
         }
-        if(!importedJavaUtil) {
-            parent.addAfter(elementFactory.createImportDirective(new ImportPath("java.util.*")), parent.getFirstChild());
-        }
+    }
 
+
+    public void generate() {
+        KtPsiFactory elementFactory = new KtPsiFactory(mClass.getProject());
+
+        // Insert imports
+        insertImports(mClass.getContainingKtFile());
 
         // Save old declarations and clean Class Body
         List<KtDeclaration> oldDeclarations = new ArrayList<KtDeclaration>();

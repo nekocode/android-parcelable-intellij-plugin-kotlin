@@ -45,7 +45,7 @@ public class TypeSerializerFactory {
             } else {
                 Collection<KotlinType> supertypes;
 
-                // Check if type is List or Array
+                // Check whether type is List or Array
                 if(typeName.startsWith("List") || typeName.startsWith("ArrayList") || typeName.startsWith("MutableList")) {
                     KotlinType typeProjectionType = type.getArguments().get(0).getType();
 
@@ -86,7 +86,7 @@ public class TypeSerializerFactory {
 
 
                 } else {
-                    // Check if supertype is Parcelable or Serializable
+                    // Check whether the type inherits from some known types
                     boolean found = false;
                     supertypes = type.getConstructor().getSupertypes();
                     for(KotlinType supertype : supertypes) {
@@ -98,6 +98,10 @@ public class TypeSerializerFactory {
 
                         } else if(supertypeName.equals("Serializable")) {
                             typeSerializers.add(new SerializableObjectSerializer(field));
+                            found = true;
+                            break;
+                        } else if (supertypeName.equals("Enum<" + typeName + ">")) {
+                            typeSerializers.add(new EnumSerializer(field));
                             found = true;
                             break;
                         }

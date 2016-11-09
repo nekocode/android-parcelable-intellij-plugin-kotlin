@@ -27,6 +27,7 @@ Just press ALT + Insert (or your equivalent keybinding for code generation) in y
 - Primitive Kotlin types: `String`, `Byte`, `Double`, `Float`, `Int`, `Long`, `Boolean`, `Char`
 - Kotlin Array types: `Array<String>`, `ByteArray`, `DoubleArray`, `FloatArray`, `IntArray`, `LongArray`, `CharArray`, `BooleanArray`
 - List of any objects **(Warning: validation is not performed)**
+- Enum type
 
 ## License
 ```
