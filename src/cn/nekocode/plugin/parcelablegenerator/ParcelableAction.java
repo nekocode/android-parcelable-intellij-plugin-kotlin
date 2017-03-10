@@ -16,7 +16,6 @@
 package cn.nekocode.plugin.parcelablegenerator;
 
 import cn.nekocode.plugin.parcelablegenerator.utils.KtClassHelper;
-import com.intellij.ide.projectView.impl.ProjectRootsUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
@@ -79,7 +78,7 @@ public class ParcelableAction extends AnAction {
         if (project == null) return null;
 
         PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
-        if (psiFile == null || !(psiFile instanceof KtFile) || ProjectRootsUtil.isOutsideSourceRoot(psiFile))
+        if (psiFile == null || !(psiFile instanceof KtFile))
             return null;
 
         Location location = Location.fromEditor(editor, project);
