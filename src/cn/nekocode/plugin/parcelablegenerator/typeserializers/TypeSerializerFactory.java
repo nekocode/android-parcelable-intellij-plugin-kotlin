@@ -17,30 +17,45 @@ public class TypeSerializerFactory {
         for(ValueParameterDescriptor field : fields) {
             KotlinType type = field.getType();
             String typeName = type.toString();
+            boolean isNullable = type.isMarkedNullable();
+            typeName = isNullable ? typeName.substring(0, typeName.length() - 1) : typeName;
 
-            if (typeName.equals("String") || typeName.equals("Byte") || typeName.equals("Double") ||
+            if (typeName.equals("Byte") || typeName.equals("Double") ||
                     typeName.equals("Float") || typeName.equals("Int") || typeName.equals("Long")) {
-                typeSerializers.add(new NormalSerializer(field));
+                typeSerializers.add(isNullable ?
+                        new NullableValueSerializer(field) : new NormalSerializer(field));
+
+            } else if (typeName.equals("String")) {
+                typeSerializers.add(isNullable ?
+                        new NullableStringSerializer(field) : new NormalSerializer(field));
 
             } else if (typeName.equals("Boolean")) {
-                typeSerializers.add(new BooleanSerializer(field));
+                typeSerializers.add(isNullable ?
+                        new NullableValueSerializer(field) : new BooleanSerializer(field));
 
             } else if (typeName.equals("Char")) {
-                typeSerializers.add(new CharSerializer(field));
+                typeSerializers.add(isNullable ?
+                        new NullableValueSerializer(field) : new CharSerializer(field));
 
             } else if (typeName.equals("List<String>") || typeName.equals("ArrayList<String>") ||
                     typeName.equals("MutableList<String>")) {
                 typeSerializers.add(new StringListSerializer(field));
 
-            } else if (typeName.equals("Array<String>") || typeName.equals("ByteArray") || typeName.equals("DoubleArray") ||
-                    typeName.equals("FloatArray") || typeName.equals("IntArray") || typeName.equals("LongArray") ||
-                    typeName.equals("CharArray") || typeName.equals("BooleanArray")) {
+            } else if (typeName.equals("Array<String>") || typeName.equals("Array<String?>") ||
+                    typeName.equals("ByteArray") || typeName.equals("DoubleArray") || typeName.equals("FloatArray") ||
+                    typeName.equals("IntArray") || typeName.equals("LongArray") || typeName.equals("CharArray") ||
+                    typeName.equals("BooleanArray")) {
                 typeSerializers.add(new OriginalArraySerializer(field));
 
             } else if (typeName.equals("Array<Byte>") || typeName.equals("Array<Double>") || typeName.equals("Array<Float>") ||
                     typeName.equals("Array<Int>") || typeName.equals("Array<Long>") || typeName.equals("Array<Char>") ||
                     typeName.equals("Array<Boolean>")) {
                 typeSerializers.add(new NormalArraySerializer(field));
+
+            } else if (typeName.equals("Array<Byte?>") || typeName.equals("Array<Double?>") || typeName.equals("Array<Float?>") ||
+                    typeName.equals("Array<Int?>") || typeName.equals("Array<Long?>") || typeName.equals("Array<Char?>") ||
+                    typeName.equals("Array<Boolean?>")) {
+                typeSerializers.add(new NullableArraySerializer(field));
 
             } else {
                 Collection<KotlinType> supertypes;

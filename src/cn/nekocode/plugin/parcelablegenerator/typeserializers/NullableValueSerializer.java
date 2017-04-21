@@ -18,21 +18,20 @@ package cn.nekocode.plugin.parcelablegenerator.typeserializers;
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
 
 /**
- * Created by nekocode on 2016/2/2.
+ * Created by nekocode on 2017/4/22.
  */
-public class NormalArraySerializer extends TypeSerializer {
+public class NullableValueSerializer extends TypeSerializer {
 
-    public NormalArraySerializer(ValueParameterDescriptor field) {
+    public NullableValueSerializer(ValueParameterDescriptor field) {
         super(field);
     }
 
     public String readValue() {
-        String typeProjection = field.getType().getArguments().get(0).getType().toString();
-        return "source.create" + typeProjection + "Array().toTypedArray()";
+        String type = field.getType().toString();
+        return "source.readValue(" + type.substring(0, type.length() - 1) + "::class.java.classLoader) as " + type;
     }
 
     public String writeValue() {
-        String typeProjection= field.getType().getArguments().get(0).getType().toString();
-        return "dest?.write" + typeProjection + "Array(" + field.getName() + ".to" + typeProjection + "Array())";
+        return "dest?.writeValue(" + field.getName() + ")";
     }
 }

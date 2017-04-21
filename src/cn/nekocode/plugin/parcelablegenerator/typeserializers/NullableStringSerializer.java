@@ -20,19 +20,17 @@ import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
 /**
  * Created by nekocode on 2016/2/2.
  */
-public class NormalArraySerializer extends TypeSerializer {
+public class NullableStringSerializer extends TypeSerializer {
 
-    public NormalArraySerializer(ValueParameterDescriptor field) {
+    public NullableStringSerializer(ValueParameterDescriptor field) {
         super(field);
     }
 
     public String readValue() {
-        String typeProjection = field.getType().getArguments().get(0).getType().toString();
-        return "source.create" + typeProjection + "Array().toTypedArray()";
+        return "source.readString()";
     }
 
     public String writeValue() {
-        String typeProjection= field.getType().getArguments().get(0).getType().toString();
-        return "dest?.write" + typeProjection + "Array(" + field.getName() + ".to" + typeProjection + "Array())";
+        return "dest?.writeString(" + field.getName() + ")";
     }
 }
