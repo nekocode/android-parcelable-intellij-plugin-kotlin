@@ -26,11 +26,19 @@ public class EnumSerializer extends TypeSerializer {
         super(field);
     }
 
-    public String readValue() {
-        return field.getType() + ".values()[source.readInt()]";
+    public String generateReadValue() {
+        if (!isTypeNullable()) {
+            return getNoneNullType() + ".values()[source.readInt()]";
+        } else {
+            return "source.readValue(Int::class.java.classLoader)?.let { Enum.values()[it as Int] }";
+        }
     }
 
-    public String writeValue() {
-        return "dest?.writeInt(" + field.getName() + ".ordinal)";
+    public String generateWriteValue() {
+        if (!isTypeNullable()) {
+            return "dest?.writeInt(" + getFieldName() + ".ordinal)";
+        } else {
+            return "dest?.writeValue(" + getFieldName() + (isTypeNullable() ? "?" : "") + ".ordinal)";
+        }
     }
 }

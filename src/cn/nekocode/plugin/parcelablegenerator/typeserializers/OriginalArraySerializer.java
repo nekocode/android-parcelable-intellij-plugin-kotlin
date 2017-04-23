@@ -26,25 +26,19 @@ public class OriginalArraySerializer extends TypeSerializer {
         super(field);
     }
 
-    public String readValue() {
-        String typeProjection;
-        if(field.getType().toString().startsWith("Array")) {
-            typeProjection = field.getType().getArguments().get(0).getType().toString();
+    public String generateReadValue() {
+        if (getProjectionType() == null) {
+            return "source.create" + getNoneNullType() + "()";
         } else {
-            typeProjection = field.getType().toString();
-            typeProjection = typeProjection.substring(0, typeProjection.length()-5);
+            return "source.create" + getNoneNullProjectionType() + "Array()";
         }
-        return "source.create" + typeProjection + "Array()";
     }
 
-    public String writeValue() {
-        String typeProjection;
-        if(field.getType().toString().startsWith("Array")) {
-            typeProjection = field.getType().getArguments().get(0).getType().toString();
+    public String generateWriteValue() {
+        if (getProjectionType() == null) {
+            return "dest?.write" + getNoneNullType() + "(" + getFieldName() + ")";
         } else {
-            typeProjection = field.getType().toString();
-            typeProjection = typeProjection.substring(0, typeProjection.length()-5);
+            return "dest?.write" + getNoneNullProjectionType() + "Array(" + getFieldName() + ")";
         }
-        return "dest?.write" + typeProjection + "Array(" + field.getName() + ")";
     }
 }

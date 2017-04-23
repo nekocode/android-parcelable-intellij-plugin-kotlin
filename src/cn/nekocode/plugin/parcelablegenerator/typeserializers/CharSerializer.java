@@ -26,11 +26,11 @@ public class CharSerializer extends TypeSerializer {
         super(field);
     }
 
-    public String readValue() {
+    public String generateReadValue() {
         return "source.readByte().toChar()";
     }
 
-    public String writeValue() {
-        return "dest?.writeByte(" + field.getName() + ".toByte())";
+    public String generateWriteValue() {
+        return "dest?.writeByte(" + getFieldName() + ".toByte())";
     }
 }

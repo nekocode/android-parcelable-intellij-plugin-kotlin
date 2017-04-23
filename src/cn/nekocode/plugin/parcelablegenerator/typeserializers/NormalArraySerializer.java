@@ -26,13 +26,11 @@ public class NormalArraySerializer extends TypeSerializer {
         super(field);
     }
 
-    public String readValue() {
-        String typeProjection = field.getType().getArguments().get(0).getType().toString();
-        return "source.create" + typeProjection + "Array().toTypedArray()";
+    public String generateReadValue() {
+        return "source.create" + getNoneNullProjectionType() + "Array().toTypedArray()";
     }
 
-    public String writeValue() {
-        String typeProjection= field.getType().getArguments().get(0).getType().toString();
-        return "dest?.write" + typeProjection + "Array(" + field.getName() + ".to" + typeProjection + "Array())";
+    public String generateWriteValue() {
+        return "dest?.write" + getNoneNullProjectionType() + "Array(" + getFieldName() + ".to" + getNoneNullProjectionType() + "Array())";
     }
 }

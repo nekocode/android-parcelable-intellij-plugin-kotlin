@@ -26,11 +26,11 @@ public class BooleanSerializer extends TypeSerializer {
         super(field);
     }
 
-    public String readValue() {
+    public String generateReadValue() {
         return "1.equals(source.readInt())";
     }
 
-    public String writeValue() {
-        return "dest?.writeInt((if(" + field.getName() + ") 1 else 0))";
+    public String generateWriteValue() {
+        return "dest?.writeInt((if(" + getFieldName() + ") 1 else 0))";
     }
 }

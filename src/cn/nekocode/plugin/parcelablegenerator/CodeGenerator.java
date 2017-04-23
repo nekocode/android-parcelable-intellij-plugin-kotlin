@@ -65,12 +65,12 @@ public class CodeGenerator {
         StringBuilder sb = new StringBuilder("constructor(source: Parcel) : this(");
         String content = "";
         for(TypeSerializer typeSerializer : typeSerializers) {
-            content += typeSerializer.readValue() + ",";
+            content += "\n" + typeSerializer.generateReadValue() + ",";
         }
         if(content.length() > 0) {
             content = content.substring(0, content.length() - 1);
         }
-        sb.append(content).append(")");
+        sb.append(content).append("\n)");
 
         return sb.toString();
     }
@@ -82,7 +82,7 @@ public class CodeGenerator {
     private String generateWriteToParcel(List<TypeSerializer> typeSerializers) {
         StringBuilder sb = new StringBuilder("override fun writeToParcel(dest: Parcel?, flags: Int) {");
         for(TypeSerializer typeSerializer : typeSerializers) {
-            sb.append(typeSerializer.writeValue()).append("\n");
+            sb.append(typeSerializer.generateWriteValue()).append("\n");
         }
         sb.append("}");
 

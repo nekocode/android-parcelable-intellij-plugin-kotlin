@@ -26,11 +26,11 @@ public class ParcelableListSerializer extends TypeSerializer {
         super(field);
     }
 
-    public String readValue() {
-        return "source.createTypedArrayList(" + field.getType().getArguments().get(0).getType() +  ".CREATOR)";
+    public String generateReadValue() {
+        return "source.createTypedArrayList(" + getNoneNullProjectionType() +  ".CREATOR)";
     }
 
-    public String writeValue() {
-        return "dest?.writeTypedList(" + field.getName() + ")";
+    public String generateWriteValue() {
+        return "dest?.writeTypedList(" + getFieldName() + ")";
     }
 }

@@ -21,13 +21,67 @@ import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
  * Created by nekocode on 2016/2/2.
  */
 public abstract class TypeSerializer {
-    protected final ValueParameterDescriptor field;
+    private final ValueParameterDescriptor field;
+    private final String fieldName;
+    private final String type;
+    private final String noneNullType;
+    private final boolean isTypeNullable;
+    private final String projectionType;
+    private final boolean isProjectionTypeNullable;
+    private final String noneNullProjectionType;
 
     public TypeSerializer(ValueParameterDescriptor field) {
         this.field = field;
+        fieldName = field.getName().toString();
+        type = field.getType().toString();
+        isTypeNullable = type.endsWith("?");
+        noneNullType = isTypeNullable ? type.substring(0, type.length() - 1) : type;
+        if (field.getType().getArguments().size() > 0) {
+            projectionType = field.getType().getArguments().get(0).getType().toString();
+            isProjectionTypeNullable  = projectionType.endsWith("?");
+            noneNullProjectionType = isProjectionTypeNullable ?
+                    projectionType.substring(0, projectionType.length() - 1) : projectionType;
+
+        } else {
+            projectionType = null;
+            isProjectionTypeNullable = true;
+            noneNullProjectionType = null;
+        }
     }
 
-    abstract public String readValue();
+    abstract public String generateReadValue();
 
-    abstract public String writeValue();
+    abstract public String generateWriteValue();
+
+    public ValueParameterDescriptor getField() {
+        return field;
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getNoneNullType() {
+        return noneNullType;
+    }
+
+    public boolean isTypeNullable() {
+        return isTypeNullable;
+    }
+
+    public String getProjectionType() {
+        return projectionType;
+    }
+
+    public boolean isProjectionTypeNullable() {
+        return isProjectionTypeNullable;
+    }
+
+    public String getNoneNullProjectionType() {
+        return noneNullProjectionType;
+    }
 }

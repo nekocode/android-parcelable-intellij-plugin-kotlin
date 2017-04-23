@@ -26,12 +26,11 @@ public class NormalListSerializer extends TypeSerializer {
         super(field);
     }
 
-    public String readValue() {
-        String typeProjection = field.getType().getArguments().get(0).getType().toString();
-        return "ArrayList<" + typeProjection + ">().apply{ source.readList(this, " + typeProjection + "::class.java.classLoader) }";
+    public String generateReadValue() {
+        return "ArrayList<" + getProjectionType() + ">().apply{ source.readList(this, " + getNoneNullProjectionType() + "::class.java.classLoader) }";
     }
 
-    public String writeValue() {
-        return "dest?.writeList(" + field.getName() + ")";
+    public String generateWriteValue() {
+        return "dest?.writeList(" + getFieldName() + ")";
     }
 }

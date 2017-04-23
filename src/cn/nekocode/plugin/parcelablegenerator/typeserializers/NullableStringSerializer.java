@@ -26,11 +26,11 @@ public class NullableStringSerializer extends TypeSerializer {
         super(field);
     }
 
-    public String readValue() {
+    public String generateReadValue() {
         return "source.readString()";
     }
 
-    public String writeValue() {
-        return "dest?.writeString(" + field.getName() + ")";
+    public String generateWriteValue() {
+        return "dest?.writeString(" + getFieldName() + ")";
     }
 }

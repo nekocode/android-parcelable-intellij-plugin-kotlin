@@ -26,11 +26,11 @@ public class SerializableObjectSerializer extends TypeSerializer {
         super(field);
     }
 
-    public String readValue() {
-        return "source.readSerializable() as " + field.getType();
+    public String generateReadValue() {
+        return "source.readSerializable() as " + getType();
     }
 
-    public String writeValue() {
-        return "dest?.writeSerializable(" + field.getName() + ")";
+    public String generateWriteValue() {
+        return "dest?.writeSerializable(" + getFieldName() + ")";
     }
 }

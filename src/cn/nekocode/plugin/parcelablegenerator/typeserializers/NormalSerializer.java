@@ -26,11 +26,11 @@ public class NormalSerializer extends TypeSerializer {
         super(field);
     }
 
-    public String readValue() {
-        return "source.read" + field.getType() + "()";
+    public String generateReadValue() {
+        return "source.read" + getNoneNullType() + "()";
     }
 
-    public String writeValue() {
-        return "dest?.write" + field.getType() + "(" + field.getName() + ")";
+    public String generateWriteValue() {
+        return "dest?.write" + getNoneNullType() + "(" + getFieldName() + ")";
     }
 }

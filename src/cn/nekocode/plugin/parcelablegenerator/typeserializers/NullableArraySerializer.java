@@ -26,13 +26,11 @@ public class NullableArraySerializer extends TypeSerializer {
         super(field);
     }
 
-    public String readValue() {
-        String type = field.getType().toString();
-        String typeProjection = field.getType().getArguments().get(0).getType().toString();
-        return "source.readArray(" + typeProjection.substring(0, typeProjection.length() -1) + "::class.java.classLoader) as " + type;
+    public String generateReadValue() {
+        return "source.readArray(" + getNoneNullProjectionType() + "::class.java.classLoader) as " + getType();
     }
 
-    public String writeValue() {
-        return "dest?.writeArray(" + field.getName() + ")";
+    public String generateWriteValue() {
+        return "dest?.writeArray(" + getFieldName() + ")";
     }
 }

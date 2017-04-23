@@ -26,11 +26,11 @@ public class ParcelableObjectSerializer extends TypeSerializer {
         super(field);
     }
 
-    public String readValue() {
-        return "source.readParcelable<" + field.getType() + ">(" + field.getType() + "::class.java.classLoader)";
+    public String generateReadValue() {
+        return "source.readParcelable<" + getType() + ">(" + getNoneNullType() + "::class.java.classLoader)";
     }
 
-    public String writeValue() {
-        return "dest?.writeParcelable(" + field.getName() + ", 0)";
+    public String generateWriteValue() {
+        return "dest?.writeParcelable(" + getFieldName() + ", 0)";
     }
 }

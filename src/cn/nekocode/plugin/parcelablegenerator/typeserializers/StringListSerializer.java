@@ -26,11 +26,11 @@ public class StringListSerializer extends TypeSerializer {
         super(field);
     }
 
-    public String readValue() {
+    public String generateReadValue() {
         return "source.createStringArrayList()";
     }
 
-    public String writeValue() {
-        return "dest?.writeStringList(" + field.getName() + ")";
+    public String generateWriteValue() {
+        return "dest?.writeStringList(" + getFieldName() + ")";
     }
 }
