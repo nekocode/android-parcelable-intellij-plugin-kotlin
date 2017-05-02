@@ -31,6 +31,6 @@ public class NormalSerializer extends TypeSerializer {
     }
 
     public String generateWriteValue() {
-        return "dest?.write" + getNoneNullType() + "(" + getFieldName() + ")";
+        return "dest.write" + getNoneNullType() + "(" + getFieldName() + ")";
     }
 }

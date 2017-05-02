@@ -31,6 +31,6 @@ public class StringListSerializer extends TypeSerializer {
     }
 
     public String generateWriteValue() {
-        return "dest?.writeStringList(" + getFieldName() + ")";
+        return "dest.writeStringList(" + getFieldName() + ")";
     }
 }

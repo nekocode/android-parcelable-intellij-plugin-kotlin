@@ -80,7 +80,7 @@ public class CodeGenerator {
     }
 
     private String generateWriteToParcel(List<TypeSerializer> typeSerializers) {
-        StringBuilder sb = new StringBuilder("override fun writeToParcel(dest: Parcel?, flags: Int) {");
+        StringBuilder sb = new StringBuilder("override fun writeToParcel(dest: Parcel, flags: Int) {");
         for(TypeSerializer typeSerializer : typeSerializers) {
             sb.append(typeSerializer.generateWriteValue()).append("\n");
         }

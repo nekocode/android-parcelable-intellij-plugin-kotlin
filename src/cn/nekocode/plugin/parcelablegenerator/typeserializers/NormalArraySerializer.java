@@ -31,6 +31,6 @@ public class NormalArraySerializer extends TypeSerializer {
     }
 
     public String generateWriteValue() {
-        return "dest?.write" + getNoneNullProjectionType() + "Array(" + getFieldName() + ".to" + getNoneNullProjectionType() + "Array())";
+        return "dest.write" + getNoneNullProjectionType() + "Array(" + getFieldName() + ".to" + getNoneNullProjectionType() + "Array())";
     }
 }

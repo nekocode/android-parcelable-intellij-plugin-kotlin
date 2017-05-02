@@ -31,6 +31,6 @@ public class NullableValueSerializer extends TypeSerializer {
     }
 
     public String generateWriteValue() {
-        return "dest?.writeValue(" + getFieldName() + ")";
+        return "dest.writeValue(" + getFieldName() + ")";
     }
 }

@@ -36,9 +36,9 @@ public class OriginalArraySerializer extends TypeSerializer {
 
     public String generateWriteValue() {
         if (getProjectionType() == null) {
-            return "dest?.write" + getNoneNullType() + "(" + getFieldName() + ")";
+            return "dest.write" + getNoneNullType() + "(" + getFieldName() + ")";
         } else {
-            return "dest?.write" + getNoneNullProjectionType() + "Array(" + getFieldName() + ")";
+            return "dest.write" + getNoneNullProjectionType() + "Array(" + getFieldName() + ")";
         }
     }
 }
