@@ -27,7 +27,7 @@ public class ParcelableObjectSerializer extends TypeSerializer {
     }
 
     public String generateReadValue() {
-        return "source.readParcelable<" + getType() + ">(" + getNoneNullType() + "::class.java.classLoader)";
+        return "source.readParcelable<" + getNoneNullType() + ">(" + getNoneNullType() + "::class.java.classLoader)";
     }
 
     public String generateWriteValue() {
