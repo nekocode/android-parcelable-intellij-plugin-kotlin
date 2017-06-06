@@ -31,6 +31,6 @@ public class SerializableObjectSerializer extends TypeSerializer {
     }
 
     public String generateWriteValue() {
-        return "dest.writeSerializable(" + getFieldName() + ")";
+        return "writeSerializable(" + getFieldName() + ")";
     }
 }

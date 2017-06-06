@@ -31,6 +31,6 @@ public class CharSerializer extends TypeSerializer {
     }
 
     public String generateWriteValue() {
-        return "dest.writeByte(" + getFieldName() + ".toByte())";
+        return "writeByte(" + getFieldName() + ".toByte())";
     }
 }

@@ -36,9 +36,9 @@ public class EnumSerializer extends TypeSerializer {
 
     public String generateWriteValue() {
         if (!isTypeNullable()) {
-            return "dest.writeInt(" + getFieldName() + ".ordinal)";
+            return "writeInt(" + getFieldName() + ".ordinal)";
         } else {
-            return "dest.writeValue(" + getFieldName() + (isTypeNullable() ? "?" : "") + ".ordinal)";
+            return "writeValue(" + getFieldName() + (isTypeNullable() ? "?" : "") + ".ordinal)";
         }
     }
 }

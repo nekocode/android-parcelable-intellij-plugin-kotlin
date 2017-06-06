@@ -64,10 +64,10 @@ public class CodeGenerator {
     private String generateConstructor(List<TypeSerializer> typeSerializers) {
         StringBuilder sb = new StringBuilder("constructor(source: Parcel) : this(");
         String content = "";
-        for(TypeSerializer typeSerializer : typeSerializers) {
+        for (TypeSerializer typeSerializer : typeSerializers) {
             content += "\n" + typeSerializer.generateReadValue() + ",";
         }
-        if(content.length() > 0) {
+        if (content.length() > 0) {
             content = content.substring(0, content.length() - 1);
         }
         sb.append(content).append("\n)");
@@ -80,8 +80,8 @@ public class CodeGenerator {
     }
 
     private String generateWriteToParcel(List<TypeSerializer> typeSerializers) {
-        StringBuilder sb = new StringBuilder("override fun writeToParcel(dest: Parcel, flags: Int) {");
-        for(TypeSerializer typeSerializer : typeSerializers) {
+        StringBuilder sb = new StringBuilder("override fun writeToParcel(dest: Parcel, flags: Int) = with (dest) {");
+        for (TypeSerializer typeSerializer : typeSerializers) {
             sb.append(typeSerializer.generateWriteValue()).append("\n");
         }
         sb.append("}");
@@ -105,23 +105,23 @@ public class CodeGenerator {
         boolean importedParcelable = false;
         boolean importedParcel = false;
         List<KtImportDirective> importList = ktFile.getImportDirectives();
-        for(KtImportDirective importDirective : importList) {
+        for (KtImportDirective importDirective : importList) {
             ImportPath importPath = importDirective.getImportPath();
-            if(importPath != null) {
+            if (importPath != null) {
                 String pathStr = importPath.getPathStr();
-                if(pathStr.equals("android.os.Parcelable")) {
+                if (pathStr.equals("android.os.Parcelable")) {
                     importedParcelable = true;
                 }
-                if(pathStr.equals("android.os.Parcel")) {
+                if (pathStr.equals("android.os.Parcel")) {
                     importedParcel = true;
                 }
             }
         }
 
-        if(!importedParcelable) {
+        if (!importedParcelable) {
             insertImport(ktFile, "android.os.Parcelable");
         }
-        if(!importedParcel) {
+        if (!importedParcel) {
             insertImport(ktFile, "android.os.Parcel");
         }
     }

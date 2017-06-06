@@ -31,6 +31,6 @@ public class BooleanSerializer extends TypeSerializer {
     }
 
     public String generateWriteValue() {
-        return "dest.writeInt((if(" + getFieldName() + ") 1 else 0))";
+        return "writeInt((if(" + getFieldName() + ") 1 else 0))";
     }
 }

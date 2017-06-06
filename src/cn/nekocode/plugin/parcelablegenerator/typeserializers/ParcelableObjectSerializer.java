@@ -31,6 +31,6 @@ public class ParcelableObjectSerializer extends TypeSerializer {
     }
 
     public String generateWriteValue() {
-        return "dest.writeParcelable(" + getFieldName() + ", 0)";
+        return "writeParcelable(" + getFieldName() + ", 0)";
     }
 }
