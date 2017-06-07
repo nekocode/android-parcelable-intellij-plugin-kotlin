@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package cn.nekocode.plugin.parcelablegenerator;
 
 import cn.nekocode.plugin.parcelablegenerator.utils.KtClassHelper;
@@ -30,7 +31,7 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * Created by nekocode on 2015/12/1.
+ * @author nekocode (nekocode.cn@gmail.com)
  */
 public class GenerateDialog extends DialogWrapper {
 

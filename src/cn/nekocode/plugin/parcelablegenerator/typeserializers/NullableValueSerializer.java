@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package cn.nekocode.plugin.parcelablegenerator.typeserializers;
 
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
 
 /**
- * Created by nekocode on 2017/4/22.
+ * @author nekocode (nekocode.cn@gmail.com)
  */
 public class NullableValueSerializer extends TypeSerializer {
 

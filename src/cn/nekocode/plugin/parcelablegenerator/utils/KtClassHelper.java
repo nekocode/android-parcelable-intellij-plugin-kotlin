@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package cn.nekocode.plugin.parcelablegenerator.utils;
 
 import com.intellij.psi.PsiElement;
@@ -31,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by nekocode on 2016/2/19.
+ * @author nekocode (nekocode.cn@gmail.com)
  */
 public class KtClassHelper {
     public static List<ValueParameterDescriptor> findParams(KtClass ktClass) {

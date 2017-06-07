@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package cn.nekocode.plugin.parcelablegenerator;
 
 import cn.nekocode.plugin.parcelablegenerator.utils.KtClassHelper;
@@ -20,38 +21,46 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.*;
 
 import java.util.List;
 
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
+import org.jetbrains.kotlin.idea.KotlinLanguage;
 import org.jetbrains.kotlin.idea.internal.Location;
 import org.jetbrains.kotlin.psi.*;
 
 /**
- * Created by nekocode on 2015/12/1.
+ * @author nekocode (nekocode.cn@gmail.com)
  */
 public class ParcelableAction extends AnAction {
+    private KtClass ktClass;
+
+    @Override
+    public void update(AnActionEvent e) {
+        ktClass = getPsiClassFromEvent(e);
+
+        e.getPresentation().setEnabled(
+                ktClass != null &&
+                        !ktClass.isEnum() &&
+                        !ktClass.isInterface()
+        );
+    }
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        KtClass ktClass = getPsiClassFromEvent(e);
-
-        if(ktClass != null) {
-//            if(!ktClass.isData()) {
-//                Messages.showErrorDialog("ParcelableGenerator only support for data class.", "Sorry");
+//        if(!ktClass.isData()) {
+//            Messages.showErrorDialog("ParcelableGenerator only support for data class.", "Sorry");
 //
-//            } else {
-//                GenerateDialog dlg = new GenerateDialog(ktClass);
-//                dlg.show();
-//                if (dlg.isOK()) {
-//                    generateParcelable(ktClass, dlg.getSelectedFields());
-//                }
-
-                generateParcelable(ktClass, KtClassHelper.findParams(ktClass));
+//        } else {
+//            GenerateDialog dlg = new GenerateDialog(ktClass);
+//            dlg.show();
+//            if (dlg.isOK()) {
+//                generateParcelable(ktClass, dlg.getSelectedFields());
 //            }
-        }
+
+        generateParcelable(ktClass, KtClassHelper.findParams(ktClass));
+//        }
     }
 
     private void generateParcelable(final KtClass ktClass, final List<ValueParameterDescriptor> fields) {
@@ -63,26 +72,18 @@ public class ParcelableAction extends AnAction {
         }.execute();
     }
 
-    @Override
-    public void update(AnActionEvent e) {
-        KtClass ktClass = getPsiClassFromEvent(e);
-
-        e.getPresentation().setEnabled(ktClass != null && !ktClass.isEnum() && !ktClass.isInterface());
-    }
-
     private KtClass getPsiClassFromEvent(AnActionEvent e) {
-        Editor editor = e.getData(PlatformDataKeys.EDITOR);
-        assert editor != null;
+        final Editor editor = e.getData(PlatformDataKeys.EDITOR);
+        if (editor == null) return null;
 
-        Project project = editor.getProject();
+        final Project project = editor.getProject();
         if (project == null) return null;
 
-        PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
-        if (psiFile == null || !(psiFile instanceof KtFile))
-            return null;
+        final PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
+        if (psiFile == null || psiFile.getLanguage() != KotlinLanguage.INSTANCE) return null;
 
-        Location location = Location.fromEditor(editor, project);
-        PsiElement psiElement = psiFile.findElementAt(location.getStartOffset());
+        final Location location = Location.fromEditor(editor, project);
+        final PsiElement psiElement = psiFile.findElementAt(location.getStartOffset());
         if (psiElement == null) return null;
 
         return KtClassHelper.getKtClassForElement(psiElement);

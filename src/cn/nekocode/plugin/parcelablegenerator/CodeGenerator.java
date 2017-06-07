@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package cn.nekocode.plugin.parcelablegenerator;
 
 import cn.nekocode.plugin.parcelablegenerator.typeserializers.*;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor;
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
 import org.jetbrains.kotlin.idea.caches.resolve.ResolutionUtils;
 import org.jetbrains.kotlin.idea.util.ImportInsertHelper;
@@ -25,10 +27,11 @@ import org.jetbrains.kotlin.psi.*;
 import org.jetbrains.kotlin.resolve.ImportPath;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by nekocode on 2015/12/1.
+ * @author nekocode (nekocode.cn@gmail.com)
  */
 public class CodeGenerator {
     private final KtClass mClass;
@@ -90,14 +93,13 @@ public class CodeGenerator {
     }
 
     private void insertImport(KtFile ktFile, String fqName) {
-        ImportInsertHelper.getInstance(ktFile.getProject())
-                .importDescriptor(
-                        ktFile,
-                        ResolutionUtils.resolveImportReference(
-                                ktFile, new FqName(fqName)
-                        ).iterator().next(),
-                        false
-                );
+        final Collection<DeclarationDescriptor> descriptors =
+                ResolutionUtils.resolveImportReference(ktFile, new FqName(fqName));
+
+        if (!descriptors.isEmpty()) {
+            ImportInsertHelper.getInstance(ktFile.getProject())
+                    .importDescriptor(ktFile, descriptors.iterator().next(), false);
+        }
     }
 
     private void insertImports(KtFile ktFile) {
