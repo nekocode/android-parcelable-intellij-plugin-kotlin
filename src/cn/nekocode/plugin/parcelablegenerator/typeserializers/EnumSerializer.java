@@ -30,7 +30,7 @@ public class EnumSerializer extends TypeSerializer {
         if (!isTypeNullable()) {
             return getNoneNullType() + ".values()[source.readInt()]";
         } else {
-            return "source.readValue(Int::class.java.classLoader)?.let { Enum.values()[it as Int] }";
+            return "source.readValue(Int::class.java.classLoader)?.let { " + getNoneNullType() + ".values()[it as Int] }";
         }
     }
 
