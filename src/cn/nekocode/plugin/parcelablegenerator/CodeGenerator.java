@@ -216,10 +216,10 @@ public class CodeGenerator {
 
         List<TypeSerializer> typeSerializers = TypeSerializerFactory.createTypeSerializers(mFields);
         String block = oldDeclarationsStr +
-                generateStaticCreator(mClass, oldBodyOfCompanion) + "\n\n" +
                 generateConstructor(typeSerializers) + "\n\n" +
                 generateDescribeContents() + "\n\n" +
-                generateWriteToParcel(typeSerializers);
+                generateWriteToParcel(typeSerializers) + "\n\n" +
+                generateStaticCreator(mClass, oldBodyOfCompanion);
 
         mClass.addAfter(elementFactory.createBlock(block), mClass.getLastChild());
     }
