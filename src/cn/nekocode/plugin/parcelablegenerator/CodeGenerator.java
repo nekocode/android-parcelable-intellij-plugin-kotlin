@@ -17,7 +17,12 @@
 package cn.nekocode.plugin.parcelablegenerator;
 
 import cn.nekocode.plugin.parcelablegenerator.typeserializers.*;
+import com.intellij.lang.ImportOptimizer;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.codeStyle.CodeStyleManager;
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
+import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor;
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor;
 import org.jetbrains.kotlin.idea.caches.resolve.ResolutionUtils;
@@ -128,6 +133,11 @@ public class CodeGenerator {
         }
     }
 
+    private void formatCode(KtClass ktClass) {
+        CodeStyleManager.getInstance(ktClass.getProject()).reformatText(ktClass.getContainingFile(),
+                ContainerUtil.newArrayList(ktClass.getTextRange()));
+    }
+
 
     public void generate() {
         KtPsiFactory elementFactory = new KtPsiFactory(mClass.getProject());
@@ -222,5 +232,7 @@ public class CodeGenerator {
                 generateStaticCreator(mClass, oldBodyOfCompanion);
 
         mClass.addAfter(elementFactory.createBlock(block), mClass.getLastChild());
+
+        formatCode(mClass);
     }
 }
