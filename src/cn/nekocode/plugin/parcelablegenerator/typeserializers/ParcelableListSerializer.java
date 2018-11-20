@@ -28,7 +28,7 @@ public class ParcelableListSerializer extends TypeSerializer {
     }
 
     public String generateReadValue() {
-        return "source.createTypedArrayList(" + getNoneNullProjectionType() +  ".CREATOR)";
+        return "listOf<" + getNoneNullProjectionType() + "}>().apply { source.readTypedList(this, " + getNoneNullProjectionType() + "}.CREATOR) }";
     }
 
     public String generateWriteValue() {
